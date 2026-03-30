@@ -1,6 +1,6 @@
 ---
 import { slugify } from '../lib/data.js';
-const { matches, players } = Astro.props;
+const { matches, players, context = '' } = Astro.props;
 
 const PREV_ROUND: Record<string, string> = { F: 'SF', SF: 'QF', QF: 'R16' };
 const ROUND_ORDER = ['R16', 'QF', 'SF', '3P', 'F'];
@@ -135,6 +135,15 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
             <div class="round-matches" style={`height: ${bracketH}px`}>
               {items.map(({ match: m, slots }) => {
                 const score = parseScore(m.score);
+                const hasBothPlayers = m.winner1_id && m.loser1_id;
+                const isUnconfirmed = m.notes?.includes('unconfirmed');
+                const isMissingScore = hasBothPlayers && !score;
+                const suggestData = hasBothPlayers ? JSON.stringify({
+                  winner: displayName(m.winner1_id),
+                  loser: displayName(m.loser1_id),
+                  round: m.round,
+                  context,
+                }) : null;
                 return (
                   <div class="match-slot" style={`height: ${slots * BASE_H}px`}>
                     <div class="match">
@@ -150,7 +159,20 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
                           </span>
                         )}
                       </div>
-                      {m.notes?.includes('unconfirmed') && <span class="badge">?</span>}
+                      {isUnconfirmed && (
+                        <button
+                          class="badge badge-btn"
+                          onclick={`openSuggestModal(${suggestData})`}
+                          title="Resultado no confirmado — haz clic para sugerir"
+                        >?</button>
+                      )}
+                      {isMissingScore && !isUnconfirmed && (
+                        <button
+                          class="badge badge-btn badge-missing"
+                          onclick={`openSuggestModal(${suggestData})`}
+                          title="¿Recuerdas este resultado?"
+                        >?</button>
+                      )}
                     </div>
                   </div>
                 );
@@ -288,5 +310,18 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
     color: var(--c-black);
     border: 1px solid var(--c-black);
     padding: 1px 4px;
+  }
+
+  .badge-btn {
+    cursor: pointer;
+    font-family: inherit;
+    transition: box-shadow 0.1s, transform 0.1s;
+  }
+  .badge-btn:hover {
+    box-shadow: 2px 2px 0 var(--c-black);
+    transform: translate(-1px, -1px);
+  }
+  .badge-missing {
+    background: var(--c-blue);
   }
 </style>

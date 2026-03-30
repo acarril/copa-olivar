@@ -96,6 +96,118 @@ const baseClean = base.replace(/\/$/, '');
       transform: translate(-2px, -2px);
     }
 
+    /* Modal */
+    dialog {
+      border: var(--border);
+      box-shadow: var(--shadow-hover);
+      padding: 0;
+      max-width: min(440px, calc(100vw - 2rem));
+      width: 100%;
+      background: #fff;
+    }
+    dialog::backdrop { background: rgba(0,0,0,0.45); }
+
+    .modal-header {
+      background: var(--c-yellow);
+      border-bottom: var(--border);
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .modal-header h2 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--c-black);
+      line-height: 1.3;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      color: var(--c-black);
+      padding: 0;
+      line-height: 1;
+      flex-shrink: 0;
+      font-family: inherit;
+    }
+
+    .modal-body { padding: 1.25rem; }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--c-black);
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      border: var(--border);
+      padding: 0.5rem 0.75rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      background: var(--c-bg);
+      color: var(--c-black);
+      box-shadow: var(--shadow-sm);
+      outline: none;
+    }
+    .form-group textarea { resize: vertical; min-height: 72px; }
+
+    .btn-submit {
+      width: 100%;
+      padding: 0.65rem;
+      background: var(--c-green);
+      border: var(--border);
+      box-shadow: var(--shadow-sm);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--c-black);
+      cursor: pointer;
+      transition: box-shadow 0.1s, transform 0.1s;
+    }
+    .btn-submit:hover {
+      box-shadow: var(--shadow-card);
+      transform: translate(-2px, -2px);
+    }
+
+    .modal-success {
+      text-align: center;
+      padding: 2rem 1.25rem;
+    }
+    .modal-success .success-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+    }
+    .modal-success p {
+      font-size: 0.9rem;
+      color: var(--c-text);
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+    .btn-cerrar {
+      padding: 0.5rem 1.5rem;
+      background: var(--c-bg);
+      border: var(--border);
+      box-shadow: var(--shadow-sm);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: box-shadow 0.1s, transform 0.1s;
+    }
+    .btn-cerrar:hover {
+      box-shadow: var(--shadow-card);
+      transform: translate(-2px, -2px);
+    }
+
     main {
       max-width: 960px;
       margin: 2.5rem auto;
@@ -113,5 +225,101 @@ const baseClean = base.replace(/\/$/, '');
   <main>
     <slot />
   </main>
+
+  <dialog id="suggest-modal">
+    <div class="modal-header">
+      <h2 id="modal-title">Contribuir</h2>
+      <button class="modal-close" onclick="closeSuggestModal()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="suggest-form" action="https://formspree.io/f/mwvwoyqp" method="POST">
+        <input type="hidden" name="_subject" id="form-subject" value="Sugerencia — Olivar Open">
+        <input type="hidden" name="partido" id="form-match" value="">
+        <input type="hidden" name="categoria" id="form-context" value="">
+        <div class="form-group">
+          <label for="form-score">Resultado</label>
+          <input type="text" id="form-score" name="resultado" placeholder="ej: 6-7" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="form-name">Tu nombre</label>
+          <input type="text" id="form-name" name="nombre" placeholder="ej: Tía Sonia" required>
+        </div>
+        <div class="form-group">
+          <label for="form-notes">Comentarios (opcional)</label>
+          <textarea id="form-notes" name="notas" placeholder="Escribe lo que te acuerdes..."></textarea>
+        </div>
+        <button type="submit" class="btn-submit">Enviar</button>
+      </form>
+      <div id="modal-success" hidden>
+        <div class="modal-success">
+          <div class="success-icon">&#10004;</div>
+          <p>¡Gracias! Revisaremos el resultado y lo actualizaremos pronto.</p>
+          <button class="btn-cerrar" onclick="closeSuggestModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script is:inline>
+    function openSuggestModal(data) {
+      var modal = document.getElementById('suggest-modal');
+      var title = document.getElementById('modal-title');
+      var matchInput = document.getElementById('form-match');
+      var contextInput = document.getElementById('form-context');
+      var subjectInput = document.getElementById('form-subject');
+
+      if (data && data.winner) {
+        var matchDesc = data.winner + ' vs ' + data.loser + ' (' + data.round + ')';
+        var ctx = data.context || '';
+        title.textContent = 'Sugerir resultado: ' + matchDesc + (ctx ? ' · ' + ctx : '');
+        matchInput.value = matchDesc;
+        contextInput.value = ctx;
+        subjectInput.value = 'Resultado: ' + matchDesc + (ctx ? ' — ' + ctx : '');
+      } else {
+        title.textContent = 'Contribuir';
+        matchInput.value = '';
+        contextInput.value = '';
+        subjectInput.value = 'Sugerencia — Olivar Open';
+      }
+
+      document.getElementById('suggest-form').hidden = false;
+      document.getElementById('modal-success').hidden = true;
+      modal.showModal();
+    }
+
+    function closeSuggestModal() {
+      var modal = document.getElementById('suggest-modal');
+      modal.close();
+      document.getElementById('suggest-form').reset();
+      document.getElementById('suggest-form').hidden = false;
+      document.getElementById('modal-success').hidden = true;
+    }
+
+    document.getElementById('suggest-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var form = e.target;
+      var btn = form.querySelector('.btn-submit');
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      }).then(function(res) {
+        if (res.ok) {
+          form.hidden = true;
+          document.getElementById('modal-success').hidden = false;
+        } else {
+          alert('Hubo un error. Por favor intenta de nuevo.');
+          btn.disabled = false;
+          btn.textContent = 'Enviar';
+        }
+      }).catch(function() {
+        alert('Error de conexión. Por favor intenta de nuevo.');
+        btn.disabled = false;
+        btn.textContent = 'Enviar';
+      });
+    });
+  </script>
 </body>
 </html>

@@ -38,7 +38,7 @@ const championUrl = champion ? `${base}/jugador/${slugify(champion.name, champio
   </div>
 
   <div class="bracket-card">
-    <Bracket matches={catMatches} players={players} />
+    <Bracket matches={catMatches} players={players} context={`${cat.label} ${edition?.year}`} />
   </div>
 </Base>
 
