@@ -40,16 +40,15 @@ const editionData = sortedEditions.map(edition => {
           <thead>
             <tr>
               <th>Categoría</th>
-              <th>Campeón/a</th>
+              <th>Campeón/a/es</th>
               <th>Final</th>
               <th class="hide-mobile">Finalista</th>
-              <th class="hide-mobile"></th>
             </tr>
           </thead>
           <tbody>
             {rows.map(({ cat, champion, runnerUp, score }) => (
               <tr>
-                <td class="cat-label"><a class="text-link" href={`${base}/${edition.year}/${cat.slug}`}>{cat.label}</a></td>
+                <td class="cat-label"><a class="cat-link" href={`${base}/${edition.year}/${cat.slug}`}>{cat.label}</a></td>
                 <td class="champion">
                   {champion
                     ? <a class="text-link" href={`${base}/jugador/${slugify(champion.name, champion.surname)}`}>{displayName(champion)}</a>
@@ -60,11 +59,6 @@ const editionData = sortedEditions.map(edition => {
                   {runnerUp
                     ? <a class="text-link" href={`${base}/jugador/${slugify(runnerUp.name, runnerUp.surname)}`}>{displayName(runnerUp)}</a>
                     : '—'}
-                </td>
-                <td class="hide-mobile">
-                  <a href={`${base}/${edition.year}/${cat.slug}`} class="draw-link">
-                    Cuadro
-                  </a>
                 </td>
               </tr>
             ))}
@@ -161,7 +155,7 @@ const editionData = sortedEditions.map(edition => {
 
   tr:last-child td { border-bottom: none; }
 
-  .cat-label { color: var(--c-text); font-size: 0.85rem; }
+  .cat-label { font-size: 0.85rem; padding-left: 3px; }
   .champion { font-weight: 700; color: var(--c-black); }
   .score {
     font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
@@ -170,7 +164,7 @@ const editionData = sortedEditions.map(edition => {
   }
   .runner-up { color: var(--c-text); font-weight: 300; }
 
-  .draw-link {
+  .cat-link {
     display: inline-block;
     font-size: 0.78rem;
     font-weight: 600;
@@ -180,9 +174,10 @@ const editionData = sortedEditions.map(edition => {
     border: var(--border);
     box-shadow: var(--shadow-sm);
     color: var(--c-black);
+    text-decoration: none;
     transition: box-shadow 0.1s, transform 0.1s;
   }
-  .draw-link:hover {
+  .cat-link:hover {
     box-shadow: var(--shadow-card);
     transform: translate(-2px, -2px);
   }
