@@ -5,7 +5,7 @@ import { categories, matches, players, editions } from '../../lib/data.js';
 
 export function getStaticPaths() {
   return categories.map(cat => ({
-    params: { id: cat.category_id },
+    params: { slug: cat.slug },
     props: { cat },
   }));
 }
@@ -24,7 +24,7 @@ const championName = champion
 <Base title={cat.label}>
   <div class="header">
     <div class="breadcrumb">
-      <a href={import.meta.env.BASE_URL}>Olivar Open {edition?.year}</a>
+      <a href={import.meta.env.BASE_URL.replace(/\/$/, '') + '/'}>Olivar Open {edition?.year}</a>
       <span>/</span>
     </div>
     <h1>{cat.label}</h1>
