@@ -3,7 +3,7 @@ p1,Andres,Galilea,Ness,M,,,true
 p2,Juan Pablo,Gonzalez,JP,M,,,false
 p3,Jaime,Herrera,Jimmy,M,,,true
 p4,Sebastian,Valenzuela,,M,,,false
-p5,Jorge,Brown,,M,,,false
+p5,Jorge,Browne,,M,,,false
 p6,Alvaro,Carril,,M,,,false
 p7,Agustin,Melero,,M,,,false
 p8,Santiago,Ovalle,Tatalo,M,,,false
@@ -27,3 +27,5 @@ p25,Eugenia,Ruiz Tagle,Uge,F,,,false
 p26,Macarena,Ruiz Tagle,Maca,F,,,false
 p27,Isidora,Undurraga,Isi,F,,,false
 p28,José,Pérez,Pepe,M,,,false
+p29,Rufino,Melero,Rufo,M,,,false
+p30,Manuel,Ureta,,M,,,false
