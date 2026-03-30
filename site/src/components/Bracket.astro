@@ -10,6 +10,7 @@ const ROUND_LABELS: Record<string, string> = {
 const BASE_H = 54;   // px per player slot
 const LABEL_H = 28;  // px for round-label header
 const CONN_W = 20;   // px width of connector SVG column
+const MATCH_MARGIN = 12; // left margin on .match cards (output arm must reach this far)
 
 // --- Tree types ---
 interface MatchRow { [k: string]: string }
@@ -165,8 +166,8 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
                     <line x1={mx} y1={upperCY} x2={mx} y2={lowerCY} />
                     {/* lower arm */}
                     <line x1="0" y1={lowerCY} x2={mx} y2={lowerCY} />
-                    {/* output to next round */}
-                    <line x1={mx} y1={midY} x2={CONN_W} y2={midY} />
+                    {/* output to next round — extend past SVG edge to reach the match card */}
+                    <line x1={mx} y1={midY} x2={CONN_W + MATCH_MARGIN} y2={midY} />
                   </>
                 );
               })}
