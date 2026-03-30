@@ -32,13 +32,13 @@ function displayName(p) {
 
 <Base>
   <section class="hero">
-    <h1>Olivar Open</h1>
-    <p>{currentEdition.edition_number}.a edición &mdash; {currentEdition.year}</p>
+    <h1>Abierto de Tenis Olivar</h1>
+    <p>Federación Rural de Tenis Olivar</p>
   </section>
 
   {editionData.map(({ edition, rows }) => (
     <section class="card">
-      <h2>Campeones {edition.year}</h2>
+      <h2>{edition.year} &mdash; {edition.edition_number}° edición</h2>
       <table>
         <thead>
           <tr>

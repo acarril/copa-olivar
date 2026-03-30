@@ -99,11 +99,11 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
 
   <div class="stats-row">
     <div class="stat-card">
-      <span class="stat-value">{wins.length}<span class="stat-sub">W</span></span>
+      <span class="stat-value">{wins.length}</span>
       <span class="stat-label">Victorias</span>
     </div>
     <div class="stat-card">
-      <span class="stat-value">{losses.length}<span class="stat-sub">L</span></span>
+      <span class="stat-value">{losses.length}</span>
       <span class="stat-label">Derrotas</span>
     </div>
     <div class="stat-card">
@@ -122,7 +122,7 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
       <div class="cat-list">
         {playedCategories.map((cat: any) => (
           <a href={catUrl(cat)} class="cat-pill">
-            {cat.label} →
+            {cat.label} {editionById[cat.edition_id]?.year} →
           </a>
         ))}
       </div>
@@ -135,12 +135,12 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
       <table>
         <thead>
           <tr>
-            <th>Res.</th>
+            <th></th>
             <th>Ronda</th>
             <th>Año</th>
             <th>Categoría</th>
             <th>Rival</th>
-            <th>Marcador</th>
+            <th>Resultado</th>
           </tr>
         </thead>
         <tbody>
