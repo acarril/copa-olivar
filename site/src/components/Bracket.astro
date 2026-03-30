@@ -150,26 +150,20 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
             </div>
           </div>
           {!isLast && (
-            <div class="connector-col">
-              <div style={`height: ${LABEL_H}px`} />
-              <svg width={CONN_W} height={bracketH}>
+            <svg class="connector-col" width={CONN_W} height={bracketH + LABEL_H}>
               {connectors.map(({ upperCY, lowerCY, midY }) => {
                 const mx = CONN_W / 2;
+                const oy = LABEL_H; // offset so y=0 aligns with top of match area
                 return (
                   <>
-                    {/* upper arm — extends left into col-gap to reach the match card */}
-                    <line x1={-COL_GAP} y1={upperCY} x2={mx} y2={upperCY} />
-                    {/* spine */}
-                    <line x1={mx} y1={upperCY} x2={mx} y2={lowerCY} />
-                    {/* lower arm — same length as upper arm */}
-                    <line x1={-COL_GAP} y1={lowerCY} x2={mx} y2={lowerCY} />
-                    {/* output arm — same length, extends right into col-gap */}
-                    <line x1={mx} y1={midY} x2={CONN_W + COL_GAP} y2={midY} />
+                    <line x1={-COL_GAP} y1={upperCY + oy} x2={mx}           y2={upperCY + oy} />
+                    <line x1={mx}        y1={upperCY + oy} x2={mx}           y2={lowerCY + oy} />
+                    <line x1={-COL_GAP} y1={lowerCY + oy} x2={mx}           y2={lowerCY + oy} />
+                    <line x1={mx}        y1={midY    + oy} x2={CONN_W + COL_GAP} y2={midY + oy} />
                   </>
                 );
               })}
             </svg>
-            </div>
           )}
         </>
       );
@@ -255,13 +249,9 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
 
   .tb { font-size: 0.7rem; color: #b0b7c0; }
 
-  /* Connector column between rounds */
+  /* Connector SVG column between rounds */
   .connector-col {
     flex-shrink: 0;
-  }
-
-  .connector-col svg {
-    display: block;
     overflow: visible;
   }
 
