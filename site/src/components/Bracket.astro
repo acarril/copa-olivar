@@ -150,12 +150,9 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
             </div>
           </div>
           {!isLast && (
-            <svg
-              class="connector-col"
-              width={CONN_W}
-              height={bracketH}
-              style={`margin-top: ${LABEL_H}px`}
-            >
+            <div class="connector-col">
+              <div style={`height: ${LABEL_H}px`} />
+              <svg width={CONN_W} height={bracketH}>
               {connectors.map(({ upperCY, lowerCY, midY }) => {
                 const mx = CONN_W / 2;
                 return (
@@ -172,6 +169,7 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
                 );
               })}
             </svg>
+            </div>
           )}
         </>
       );
@@ -184,7 +182,6 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
 
   .bracket {
     display: flex;
-    align-items: flex-start;
     min-width: fit-content;
   }
 
@@ -257,9 +254,13 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
 
   .tb { font-size: 0.7rem; color: #b0b7c0; }
 
-  /* SVG connector column between rounds */
+  /* Connector column between rounds */
   .connector-col {
     flex-shrink: 0;
+  }
+
+  .connector-col svg {
+    display: block;
     overflow: visible;
   }
 
