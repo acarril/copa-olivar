@@ -1,4 +1,4 @@
-player_id,name,nickname,gender,birth_year,photo_url,family_id
+player_id,name,nickname,gender,birth_year,family_id
 p1,Andres Galilea,Ness,M,,
 p2,Juan Pablo Gonzalez,JP,M,,
 p3,Jaime Herrera,Jimmy,M,,

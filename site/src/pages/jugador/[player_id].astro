@@ -1,0 +1,398 @@
+---
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+import Base from '../../layouts/Base.astro';
+import { players, matches, categories, editions } from '../../lib/data.js';
+
+export function getStaticPaths() {
+  return Object.values(players).map((p: any) => ({
+    params: { player_id: p.player_id },
+    props: { player: p },
+  }));
+}
+
+const { player } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const ROUND_LABELS: Record<string, string> = {
+  R16: 'Octavos', QF: 'Cuartos', SF: 'Semis', '3P': '3.er Puesto', F: 'Final',
+};
+
+const catById = Object.fromEntries(categories.map((c: any) => [c.category_id, c]));
+
+const playerMatches = matches.filter((m: any) =>
+  m.winner1_id === player.player_id || m.loser1_id === player.player_id
+);
+
+const wins = playerMatches.filter((m: any) => m.winner1_id === player.player_id);
+const losses = playerMatches.filter((m: any) => m.loser1_id === player.player_id);
+const winPct = playerMatches.length > 0 ? Math.round(wins.length / playerMatches.length * 100) : null;
+const titles = wins.filter((m: any) => m.round === 'F');
+
+const sortedMatches = [...playerMatches].sort((a: any, b: any) =>
+  parseInt(a.match_id.slice(1)) - parseInt(b.match_id.slice(1))
+);
+
+function displayName(p: any): string {
+  if (!p) return '—';
+  return p.nickname
+    ? `${p.nickname} ${p.name.split(' ').at(-1)}`
+    : p.name.split(' ').slice(0, 2).join(' ');
+}
+
+const playedCategories = [...new Set(playerMatches.map((m: any) => m.category_id))]
+  .map((id: any) => catById[id])
+  .filter(Boolean);
+
+// Avatar color cycles through design system palette based on player number
+const AVATAR_COLORS = ['var(--c-blue)', 'var(--c-green)', 'var(--c-pink)', 'var(--c-yellow)'];
+const avatarColor = AVATAR_COLORS[(parseInt(player.player_id.slice(1)) - 1) % 4];
+
+const initials = player.name.split(' ').filter(Boolean).slice(0, 2).map((w: string) => w[0]).join('');
+
+const photoExts = ['jpg', 'jpeg', 'png', 'webp'];
+const foundExt = photoExts.find(ext =>
+  existsSync(resolve(process.cwd(), `public/images/players/${player.player_id}.${ext}`))
+);
+const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundExt}` : null;
+---
+
+<Base title={displayName(player)}>
+  <div class="breadcrumb">
+    <a href={`${base}/`}>Olivar Open</a>
+    <span>/</span>
+    <span>Jugadores</span>
+    <span>/</span>
+  </div>
+
+  <div class="profile-card">
+    {photoSrc
+      ? <img class="avatar photo" src={photoSrc} alt={player.name} />
+      : <div class="avatar" style={`background: ${avatarColor}`}>{initials}</div>
+    }
+    <div class="profile-info">
+      <h1>{player.name}</h1>
+      {player.nickname && <span class="nickname">{player.nickname}</span>}
+      {titles.length > 0 && (
+        <div class="titles">
+          {titles.map((m: any) => (
+            <span class="title-badge">
+              ★ {catById[m.category_id]?.label ?? 'Campeón'}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-value">{wins.length}<span class="stat-sub">W</span></span>
+      <span class="stat-label">Victorias</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{losses.length}<span class="stat-sub">L</span></span>
+      <span class="stat-label">Derrotas</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{winPct !== null ? `${winPct}%` : '—'}</span>
+      <span class="stat-label">% victorias</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{titles.length}</span>
+      <span class="stat-label">{titles.length === 1 ? 'Título' : 'Títulos'}</span>
+    </div>
+  </div>
+
+  {playedCategories.length > 0 && (
+    <div class="section-card">
+      <h2>Categorías</h2>
+      <div class="cat-list">
+        {playedCategories.map((cat: any) => (
+          <a href={`${base}/categoria/${cat.slug}`} class="cat-pill">
+            {cat.label} →
+          </a>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {sortedMatches.length > 0 ? (
+    <div class="section-card">
+      <h2>Historial de partidos</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Res.</th>
+            <th>Ronda</th>
+            <th>Categoría</th>
+            <th>Rival</th>
+            <th>Marcador</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedMatches.map((m: any) => {
+            const isWin = m.winner1_id === player.player_id;
+            const opponentId = isWin ? m.loser1_id : m.winner1_id;
+            const opponent = (players as any)[opponentId];
+            const cat = catById[m.category_id];
+            return (
+              <tr>
+                <td>
+                  <span class={isWin ? 'badge win' : 'badge loss'}>
+                    {isWin ? 'V' : 'D'}
+                  </span>
+                </td>
+                <td class="round-cell">{ROUND_LABELS[m.round] ?? m.round}</td>
+                <td>
+                  {cat
+                    ? <a href={`${base}/categoria/${cat.slug}`} class="cat-link">{cat.label}</a>
+                    : '—'
+                  }
+                </td>
+                <td>
+                  {opponent
+                    ? <a href={`${base}/jugador/${opponentId}`} class="player-link">{displayName(opponent)}</a>
+                    : '—'
+                  }
+                </td>
+                <td class="score-cell">
+                  {m.score || '—'}
+                  {m.notes?.includes('unconfirmed') && <span class="unconfirmed">?</span>}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  ) : (
+    <div class="section-card empty">
+      <p>Sin partidos registrados.</p>
+    </div>
+  )}
+</Base>
+
+<style>
+  .breadcrumb {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--c-text);
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  .profile-card {
+    background: #fff;
+    border: var(--border);
+    box-shadow: var(--shadow-card);
+    padding: 1.5rem 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .avatar {
+    width: 72px;
+    height: 72px;
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--c-black);
+    letter-spacing: -0.02em;
+  }
+
+  .avatar.photo {
+    object-fit: cover;
+  }
+
+  .profile-info { display: flex; flex-direction: column; gap: 0.3rem; }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--c-black);
+    line-height: 1.1;
+  }
+
+  .nickname {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--c-text);
+    background: var(--c-bg);
+    border: var(--border);
+    padding: 0.15rem 0.5rem;
+    align-self: flex-start;
+  }
+
+  .titles { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.2rem; }
+
+  .title-badge {
+    font-size: 0.78rem;
+    font-weight: 700;
+    background: var(--c-yellow);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 0.2rem 0.6rem;
+    color: var(--c-black);
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .stat-card {
+    flex: 1;
+    background: #fff;
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .stat-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--c-black);
+    line-height: 1;
+  }
+  .stat-sub {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--c-text);
+    margin-left: 1px;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--c-text);
+  }
+
+  .section-card {
+    background: #fff;
+    border: var(--border);
+    box-shadow: var(--shadow-card);
+    padding: 1.25rem 1.75rem;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--c-text);
+    margin-bottom: 1rem;
+  }
+
+  .cat-list { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+  .cat-pill {
+    font-size: 0.82rem;
+    font-weight: 600;
+    background: var(--c-blue);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 0.25rem 0.65rem;
+    color: var(--c-black);
+    transition: box-shadow 0.1s, transform 0.1s;
+  }
+  .cat-pill:hover {
+    box-shadow: var(--shadow-card);
+    transform: translate(-2px, -2px);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--c-text);
+    padding: 0 0 0.6rem;
+    border-bottom: var(--border);
+  }
+
+  td {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.4rem;
+    border: var(--border);
+  }
+  .badge.win { background: var(--c-green); color: var(--c-black); }
+  .badge.loss { background: var(--c-bg); color: var(--c-text); }
+
+  .round-cell { color: var(--c-text); font-size: 0.85rem; }
+
+  .cat-link {
+    font-size: 0.85rem;
+    color: var(--c-text);
+  }
+  .cat-link:hover { text-decoration: underline; }
+
+  .player-link {
+    font-weight: 600;
+    color: var(--c-black);
+  }
+  .player-link:hover { text-decoration: underline; }
+
+  .score-cell {
+    font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+    font-size: 0.82rem;
+    color: var(--c-text);
+  }
+
+  .unconfirmed {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-weight: 700;
+    background: var(--c-pink);
+    border: 1px solid var(--c-black);
+    padding: 1px 4px;
+    margin-left: 4px;
+    vertical-align: middle;
+    font-family: var(--font-body);
+  }
+
+  .empty p {
+    color: var(--c-text);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 600px) {
+    .stats-row { flex-wrap: wrap; }
+    .stat-card { flex: 1 1 calc(50% - 0.375rem); }
+  }
+</style>

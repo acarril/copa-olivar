@@ -98,10 +98,16 @@ function buildConnectors(nextItems: RoundItem[]): Connector[] {
 }
 
 // --- Display helpers ---
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 function displayName(id: string): string {
   const p = (players as Record<string, Record<string, string>>)[id];
   if (!p) return '';
   return p.nickname || p.name.split(' ')[0];
+}
+
+function playerUrl(id: string): string {
+  return `${base}/jugador/${id}`;
 }
 
 function parseScore(score: string): { w: string; l: string; tb: string | null } | null {
@@ -131,11 +137,11 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
                   <div class="match-slot" style={`height: ${slots * BASE_H}px`}>
                     <div class="match">
                       <div class="player winner">
-                        <span class="pname">{displayName(m.winner1_id)}</span>
+                        <a class="pname" href={playerUrl(m.winner1_id)}>{displayName(m.winner1_id)}</a>
                         {score && <span class="pscore">{score.w}</span>}
                       </div>
                       <div class="player loser">
-                        <span class="pname">{displayName(m.loser1_id)}</span>
+                        <a class="pname" href={playerUrl(m.loser1_id)}>{displayName(m.loser1_id)}</a>
                         {score && (
                           <span class="pscore">
                             {score.l}{score.tb !== null ? <span class="tb"> ({score.tb})</span> : ''}
@@ -233,6 +239,7 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
   .player.winner { background: var(--c-green); }
   .player.winner .pname { font-weight: 700; color: var(--c-black); }
   .player.loser .pname { color: var(--c-text); font-weight: 300; }
+  .pname:hover { text-decoration: underline; }
 
   .pscore {
     font-family: "SF Mono", "Fira Code", ui-monospace, monospace;

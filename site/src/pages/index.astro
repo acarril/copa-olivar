@@ -11,7 +11,9 @@ const rows = editionCats.map(cat => {
   return {
     cat,
     champion: final ? players[final.winner1_id] : null,
+    championId: final?.winner1_id ?? null,
     runnerUp: final ? players[final.loser1_id] : null,
+    runnerUpId: final?.loser1_id ?? null,
     score: final?.score ?? null,
   };
 });
@@ -41,12 +43,20 @@ function displayName(p) {
         </tr>
       </thead>
       <tbody>
-        {rows.map(({ cat, champion, runnerUp, score }) => (
+        {rows.map(({ cat, champion, championId, runnerUp, runnerUpId, score }) => (
           <tr>
             <td class="cat-label">{cat.label}</td>
-            <td class="champion">{displayName(champion)}</td>
+            <td class="champion">
+              {champion && championId
+                ? <a href={`${base}/jugador/${championId}`}>{displayName(champion)}</a>
+                : '—'}
+            </td>
             <td class="score">{score ?? '—'}</td>
-            <td class="runner-up">{displayName(runnerUp)}</td>
+            <td class="runner-up">
+              {runnerUp && runnerUpId
+                ? <a href={`${base}/jugador/${runnerUpId}`}>{displayName(runnerUp)}</a>
+                : '—'}
+            </td>
             <td>
               <a href={`${base}/categoria/${cat.slug}`} class="draw-link">
                 Ver cuadro →
