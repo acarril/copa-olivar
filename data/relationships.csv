@@ -1,0 +1,5 @@
+player1_id,player2_id,type
+p1,p9,parent_child
+p1,p12,parent_child
+p7,p18,siblings
+p11,p13,siblings

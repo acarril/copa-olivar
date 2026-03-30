@@ -1,0 +1,6 @@
+category_id,edition_id,name,label,format,notes
+1,1,mens_singles_exportacion,Masculino Exportación,single_set_noad,
+2,1,mens_singles_nacional,Masculino Nacional,single_set_noad,
+3,1,womens_singles,Femenino,single_set_noad,
+4,1,mixed_doubles,Adultos Mixto,super_tiebreak_noad,
+5,1,jr_doubles,Adulto Junior,super_tiebreak_noad,One child/teen + one adult per team
