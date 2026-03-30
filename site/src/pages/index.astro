@@ -23,8 +23,11 @@ const editionData = sortedEditions.map(edition => {
 
 <Base>
   <section class="hero">
-    <h1>Abierto de Tenis Olivar</h1>
-    <p>Federación Rural de Tenis Olivar</p>
+    <div class="hero-text">
+      <h1>Abierto de Tenis Olivar</h1>
+      <p>Federación Rural de Tenis Olivar</p>
+    </div>
+    <img class="hero-logo" src={`${base}/images/logos/logo_abierto_olivar.png`} alt="Abierto de Tenis Olivar" />
   </section>
 
   {editionData.map(({ edition, rows }) => (
@@ -74,6 +77,9 @@ const editionData = sortedEditions.map(edition => {
 
 <style>
   .hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 2rem;
   }
   .hero h1 {
@@ -87,6 +93,11 @@ const editionData = sortedEditions.map(edition => {
     color: var(--c-text);
     margin-top: 0.35rem;
     font-weight: 300;
+  }
+  .hero-logo {
+    height: calc(2.6rem * 1.1 + 1rem + 0.35rem);
+    width: auto;
+    flex-shrink: 0;
   }
 
   .card {
