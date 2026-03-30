@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Olivar Open</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f7f5f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #1a3a2a;
+      color: #fff;
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    header p {
+      margin-top: 0.5rem;
+      font-size: 1rem;
+      color: #a8c4b0;
+    }
+
+    main {
+      max-width: 720px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #6b7280;
+      margin-bottom: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th {
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #9ca3af;
+      padding: 0 0 0.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    td {
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #f3f4f6;
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .category { color: #6b7280; font-size: 0.85rem; }
+
+    .champion {
+      font-weight: 600;
+    }
+
+    .runner-up { color: #6b7280; }
+
+    .score {
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 0.85rem;
+      color: #374151;
+    }
+
+    .edition-note {
+      font-size: 0.9rem;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .edition-note strong { color: #1a1a1a; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    footer a { color: #6b7280; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Olivar Open</h1>
+  <p>Torneo familiar de tenis &mdash; desde 2014</p>
+</header>
+
+<main>
+
+  <section>
+    <h2>10.a edicion &mdash; 2026</h2>
+    <p class="edition-note">
+      La decima edicion del Olivar Open se jugo en 2026.
+      Participaron <strong>5 categorias</strong> con un total de
+      <strong>45 partidos</strong>.
+    </p>
+  </section>
+
+  <section>
+    <h2>Campeones 2026</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Categoria</th>
+          <th>Campeon</th>
+          <th>Final</th>
+          <th>Finalista</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="category">Masculino Exportacion</td>
+          <td class="champion">JP Gonzalez</td>
+          <td class="score">6-4</td>
+          <td class="runner-up">Ness Galilea</td>
+        </tr>
+        <tr>
+          <td class="category">Masculino Nacional</td>
+          <td class="champion">Chuma Ruiz Tagle</td>
+          <td class="score">6-3</td>
+          <td class="runner-up">Paulo Olivares</td>
+        </tr>
+        <tr>
+          <td class="category">Femenino</td>
+          <td class="champion">Isi Undurraga</td>
+          <td class="score">6-4</td>
+          <td class="runner-up">Cata Picon</td>
+        </tr>
+        <tr>
+          <td class="category">Dobles Mixto</td>
+          <td class="champion">&#8212;</td>
+          <td class="score"></td>
+          <td class="runner-up"></td>
+        </tr>
+        <tr>
+          <td class="category">Dobles Junior</td>
+          <td class="champion">&#8212;</td>
+          <td class="score"></td>
+          <td class="runner-up"></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  <a href="https://github.com/acarril/olivaropen">github.com/acarril/olivaropen</a>
+</footer>
+
+</body>
+</html>
