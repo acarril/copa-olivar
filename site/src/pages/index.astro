@@ -98,6 +98,15 @@ const editionData = sortedEditions.map(edition => {
     height: calc(2.6rem * 1.1 + 1rem + 0.35rem);
     width: auto;
     flex-shrink: 0;
+    border: var(--border);
+    border-radius: 50%;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.1s, transform 0.1s;
+    cursor: default;
+  }
+  .hero-logo:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translate(-2px, -2px);
   }
 
   .card {
