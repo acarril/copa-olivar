@@ -9,6 +9,7 @@ This repo stores historical match data for the Olivar Open family tennis tournam
 - Entry IDs: plain integers, sequential — check last used in `entries.csv`.
 - Family IDs: `f1`–`f7` — fixed, defined in `families.csv`.
 - Category IDs: sequential integers — check `categories.csv`.
+- Category slugs: short Spanish URL-friendly name (e.g. `exportacion`, `nacional`, `femenino`, `mixto`, `junior`) — used as the URL path for the bracket page.
 - Edition IDs: sequential integers — check `editions.csv`.
 
 ## Data entry conventions
