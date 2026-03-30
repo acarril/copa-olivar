@@ -42,26 +42,32 @@ interface RoundItem {
   slots: number;
   upperSlots: number | null;
   lowerSlots: number | null;
+  topOffset: number;
 }
 
 // Post-order traversal: children before parent, upper before lower.
+// `offset` tracks the absolute slot position from the top of the bracket,
+// so that columns with bye-receiving matches stay vertically aligned.
 function flattenTree(tree: Node): Record<string, RoundItem[]> {
   const rounds: Record<string, RoundItem[]> = {};
 
-  function traverse(n: Node) {
-    if (n.upper) traverse(n.upper);
-    if (n.lower) traverse(n.lower);
+  function traverse(n: Node, offset: number) {
+    const upperS = n.upper ? slotCount(n.upper) : 1;
+    const lowerS = n.lower ? slotCount(n.lower) : 1;
+    if (n.upper) traverse(n.upper, offset);
+    if (n.lower) traverse(n.lower, offset + upperS);
     const r = n.match.round;
     if (!rounds[r]) rounds[r] = [];
     rounds[r].push({
       match: n.match,
-      slots: slotCount(n),
-      upperSlots: n.upper ? slotCount(n.upper) : null,
-      lowerSlots: n.lower ? slotCount(n.lower) : null,
+      slots: upperS + lowerS,
+      upperSlots: n.upper ? upperS : null,
+      lowerSlots: n.lower ? lowerS : null,
+      topOffset: offset,
     });
   }
 
-  traverse(tree);
+  traverse(tree, 0);
   return rounds;
 }
 
@@ -72,7 +78,14 @@ const roundData = tree ? flattenTree(tree) : {};
 
 const rounds = ROUND_ORDER
   .filter(r => (roundData[r]?.length ?? 0) > 0)
-  .map(r => ({ key: r, label: ROUND_LABELS[r], items: roundData[r] }));
+  .map(r => {
+    const items = roundData[r];
+    const withGaps = items.map((item, i) => {
+      const prevEnd = i === 0 ? 0 : items[i - 1].topOffset + items[i - 1].slots;
+      return { ...item, topGap: item.topOffset - prevEnd };
+    });
+    return { key: r, label: ROUND_LABELS[r], items: withGaps };
+  });
 
 // Build elbow connector data for the SVG column that sits between two rounds.
 // Uses the *next* round's items, which know their children's slot counts.
@@ -133,7 +146,7 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
           <div class="round">
             <div class="round-label">{label}</div>
             <div class="round-matches" style={`height: ${bracketH}px`}>
-              {items.map(({ match: m, slots }) => {
+              {items.map(({ match: m, slots, topGap }) => {
                 const score = parseScore(m.score);
                 const hasBothPlayers = m.winner1_id && m.loser1_id;
                 const isUnconfirmed = m.notes?.includes('unconfirmed');
@@ -145,6 +158,8 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
                   context,
                 }) : null;
                 return (
+                  <>
+                  {topGap > 0 && <div style={`height: ${topGap * BASE_H}px; flex-shrink: 0`} />}
                   <div class="match-slot" style={`height: ${slots * BASE_H}px`}>
                     <div class="match">
                       <div class="player winner">
@@ -175,6 +190,7 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
                       )}
                     </div>
                   </div>
+                  </>
                 );
               })}
             </div>
