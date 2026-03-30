@@ -22,8 +22,15 @@ function parseCSV(filename) {
     });
 }
 
-export function slugify(name) {
-  return name
+export function displayName(p) {
+  if (!p) return '—';
+  if (p.nickname && p.nickname_only === 'true') return p.nickname;
+  return p.nickname ? `${p.nickname} ${p.surname}` : `${p.name} ${p.surname}`;
+}
+
+export function slugify(name, surname) {
+  const full = surname ? `${name} ${surname}` : name;
+  return full
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')

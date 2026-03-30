@@ -1,7 +1,7 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import Bracket from '../../../components/Bracket.astro';
-import { categories, matches, players, editions, slugify } from '../../../lib/data.js';
+import { categories, matches, players, editions, slugify, displayName } from '../../../lib/data.js';
 
 export function getStaticPaths() {
   const maxYear = Math.max(...editions.map(e => Number(e.year)));
@@ -22,10 +22,8 @@ const catMatches = matches.filter(m => m.category_id === cat.category_id);
 
 const final = catMatches.find(m => m.round === 'F');
 const champion = final ? players[final.winner1_id] : null;
-const championName = champion
-  ? (champion.nickname ? `${champion.nickname} ${champion.name.split(' ').at(-1)}` : champion.name.split(' ').slice(0,2).join(' '))
-  : null;
-const championUrl = champion ? `${base}/jugador/${slugify(champion.name)}` : null;
+const championName = champion ? displayName(champion) : null;
+const championUrl = champion ? `${base}/jugador/${slugify(champion.name, champion.surname)}` : null;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
@@ -39,7 +37,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     <h1>{cat.label}</h1>
     {championName && championUrl && (
       <a href={championUrl} class="champion-badge">
-        <span class="trophy">&#127942;</span> {championName}
+        <span class="trophy">&#10032;</span> {championName}
       </a>
     )}
   </div>

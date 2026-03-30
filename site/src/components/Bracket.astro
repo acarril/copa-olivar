@@ -109,7 +109,7 @@ function displayName(id: string): string {
 
 function playerUrl(id: string): string {
   const p = (players as Record<string, Record<string, string>>)[id];
-  return `${base}/jugador/${p ? slugify(p.name) : id}`;
+  return `${base}/jugador/${p ? slugify(p.name, p.surname) : id}`;
 }
 
 function parseScore(score: string): { w: string; l: string; tb: string | null } | null {

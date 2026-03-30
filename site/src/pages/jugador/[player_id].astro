@@ -2,11 +2,11 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import Base from '../../layouts/Base.astro';
-import { players, matches, categories, editions, slugify } from '../../lib/data.js';
+import { players, matches, categories, editions, slugify, displayName } from '../../lib/data.js';
 
 export function getStaticPaths() {
   return Object.values(players).map((p: any) => ({
-    params: { player_id: slugify(p.name) },
+    params: { player_id: slugify(p.name, p.surname) },
     props: { player: p },
   }));
 }
@@ -45,13 +45,6 @@ const sortedMatches = [...playerMatches].sort((a: any, b: any) => {
   return (ROUND_RANK[b.round] ?? 0) - (ROUND_RANK[a.round] ?? 0);
 });
 
-function displayName(p: any): string {
-  if (!p) return '—';
-  return p.nickname
-    ? `${p.nickname} ${p.name.split(' ').at(-1)}`
-    : p.name.split(' ').slice(0, 2).join(' ');
-}
-
 const playedCategories = [...new Set(playerMatches.map((m: any) => m.category_id))]
   .map((id: any) => catById[id])
   .filter(Boolean);
@@ -60,7 +53,7 @@ const playedCategories = [...new Set(playerMatches.map((m: any) => m.category_id
 const AVATAR_COLORS = ['var(--c-blue)', 'var(--c-green)', 'var(--c-pink)', 'var(--c-yellow)'];
 const avatarColor = AVATAR_COLORS[(parseInt(player.player_id.slice(1)) - 1) % 4];
 
-const initials = player.name.split(' ').filter(Boolean).slice(0, 2).map((w: string) => w[0]).join('');
+const initials = `${player.name} ${player.surname}`.split(' ').filter(Boolean).slice(0, 2).map((w: string) => w[0]).join('');
 
 const photoExts = ['jpg', 'jpeg', 'png', 'webp'];
 const foundExt = photoExts.find(ext =>
@@ -79,17 +72,17 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
 
   <div class="profile-card">
     {photoSrc
-      ? <img class="avatar photo" src={photoSrc} alt={player.name} />
+      ? <img class="avatar photo" src={photoSrc} alt={`${player.name} ${player.surname}`} />
       : <div class="avatar" style={`background: ${avatarColor}`}>{initials}</div>
     }
     <div class="profile-info">
-      <h1>{player.name}</h1>
+      <h1>{player.name} {player.surname}</h1>
       {player.nickname && <span class="nickname">{player.nickname}</span>}
       {titles.length > 0 && (
         <div class="titles">
           {titles.map((m: any) => (
             <span class="title-badge">
-              ★ {catById[m.category_id]?.label ?? 'Campeón'}
+              &#10032; {catById[m.category_id]?.label ?? 'Campeón'} {editionById[catById[m.category_id]?.edition_id]?.year}
             </span>
           ))}
         </div>
@@ -168,7 +161,7 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
                 </td>
                 <td>
                   {opponent
-                    ? <a href={`${base}/jugador/${slugify(opponent.name)}`} class="player-link">{displayName(opponent)}</a>
+                    ? <a href={`${base}/jugador/${slugify(opponent.name, opponent.surname)}`} class="player-link">{displayName(opponent)}</a>
                     : '—'
                   }
                 </td>
