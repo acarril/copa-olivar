@@ -1,0 +1,87 @@
+---
+import Base from '../../layouts/Base.astro';
+import Bracket from '../../components/Bracket.astro';
+import { categories, matches, players, editions } from '../../lib/data.js';
+
+export function getStaticPaths() {
+  return categories.map(cat => ({
+    params: { id: cat.category_id },
+    props: { cat },
+  }));
+}
+
+const { cat } = Astro.props;
+const edition = editions.find(e => e.edition_id === cat.edition_id);
+const catMatches = matches.filter(m => m.category_id === cat.category_id);
+
+const final = catMatches.find(m => m.round === 'F');
+const champion = final ? players[final.winner1_id] : null;
+const championName = champion
+  ? (champion.nickname ? `${champion.nickname} ${champion.name.split(' ').at(-1)}` : champion.name.split(' ').slice(0,2).join(' '))
+  : null;
+---
+
+<Base title={cat.label}>
+  <div class="header">
+    <div class="breadcrumb">
+      <a href={import.meta.env.BASE_URL}>Olivar Open {edition?.year}</a>
+      <span>/</span>
+    </div>
+    <h1>{cat.label}</h1>
+    {championName && (
+      <div class="champion-badge">
+        <span class="trophy">&#9733;</span> {championName}
+      </div>
+    )}
+  </div>
+
+  <div class="bracket-card">
+    <Bracket matches={catMatches} players={players} />
+  </div>
+</Base>
+
+<style>
+  .header {
+    margin-bottom: 1.5rem;
+  }
+
+  .breadcrumb {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-bottom: 0.4rem;
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a3a2a;
+  }
+
+  .champion-badge {
+    margin-top: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #15803d;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+  }
+
+  .trophy { font-size: 0.8rem; }
+
+  .bracket-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+</style>

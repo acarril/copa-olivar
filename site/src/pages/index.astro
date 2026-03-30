@@ -1,0 +1,133 @@
+---
+import Base from '../layouts/Base.astro';
+import { editions, categories, matches, players } from '../lib/data.js';
+
+const base = import.meta.env.BASE_URL;
+const edition = editions.at(-1);
+const editionCats = categories.filter(c => c.edition_id === edition.edition_id);
+
+const rows = editionCats.map(cat => {
+  const final = matches.find(m => m.category_id === cat.category_id && m.round === 'F');
+  return {
+    cat,
+    champion: final ? players[final.winner1_id] : null,
+    runnerUp: final ? players[final.loser1_id] : null,
+    score: final?.score ?? null,
+  };
+});
+
+function displayName(p) {
+  if (!p) return '—';
+  return p.nickname ? `${p.nickname} ${p.name.split(' ').at(-1)}` : p.name.split(' ').slice(0, 2).join(' ');
+}
+---
+
+<Base>
+  <section class="hero">
+    <h1>Olivar Open</h1>
+    <p>{edition.edition_number}.a edición &mdash; {edition.year}</p>
+  </section>
+
+  <section class="card">
+    <h2>Campeones</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Categoría</th>
+          <th>Campeón/a</th>
+          <th>Final</th>
+          <th>Finalista</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(({ cat, champion, runnerUp, score }) => (
+          <tr>
+            <td class="cat-label">{cat.label}</td>
+            <td class="champion">{displayName(champion)}</td>
+            <td class="score">{score ?? '—'}</td>
+            <td class="runner-up">{displayName(runnerUp)}</td>
+            <td>
+              <a href={`${base}categoria/${cat.category_id}`} class="draw-link">
+                Ver cuadro →
+              </a>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    margin-bottom: 2rem;
+  }
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a3a2a;
+  }
+  .hero p {
+    font-size: 1rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+
+  h2 {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #9ca3af;
+    margin-bottom: 1rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #9ca3af;
+    padding: 0 0 0.6rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  td {
+    padding: 0.65rem 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  .cat-label { color: #6b7280; font-size: 0.85rem; }
+  .champion { font-weight: 600; }
+  .score {
+    font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+    font-size: 0.85rem;
+    color: #374151;
+  }
+  .runner-up { color: #6b7280; }
+
+  .draw-link {
+    font-size: 0.8rem;
+    color: #1a3a2a;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .draw-link:hover { text-decoration: underline; }
+</style>

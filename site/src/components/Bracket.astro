@@ -1,0 +1,200 @@
+---
+const { matches, players } = Astro.props;
+
+const ROUND_ORDER = ['R16', 'QF', 'SF', '3P', 'F'];
+const ROUND_LABELS = {
+  R16: 'Octavos',
+  QF: 'Cuartos',
+  SF: 'Semifinales',
+  '3P': '3.er Puesto',
+  F: 'Final',
+};
+
+const rounds = ROUND_ORDER
+  .map(r => ({ key: r, label: ROUND_LABELS[r], matches: matches.filter(m => m.round === r) }))
+  .filter(r => r.matches.length > 0);
+
+const maxMatches = Math.max(...rounds.map(r => r.matches.length));
+const SLOT_H = 88; // px per match slot
+const bracketH = maxMatches * SLOT_H;
+
+function name(id) {
+  const p = players[id];
+  if (!p) return '';
+  return p.nickname || p.name.split(' ')[0];
+}
+
+function parseScore(score) {
+  if (!score) return null;
+  const st = score.match(/^\[(\d+)-(\d+)\]$/);
+  if (st) return { w: st[1], l: st[2], tb: null };
+  const s = score.match(/^(\d+)-(\d+)(?:\((\d+)\))?$/);
+  if (s) return { w: s[1], l: s[2], tb: s[3] ?? null };
+  return null;
+}
+---
+
+<div class="bracket-scroll">
+  <div class="bracket" style={`--bracket-h: ${bracketH}px`}>
+    {rounds.map((round, ri) => (
+      <div class="round">
+        <div class="round-label">{round.label}</div>
+        <div class="round-matches">
+          {round.matches.map((m) => {
+            const score = parseScore(m.score);
+            const isWalkover = m.walkover === 'true';
+            return (
+              <div class="match-slot">
+                <div class="match">
+                  <div class="player winner">
+                    <span class="pname">{name(m.winner1_id)}</span>
+                    {score && <span class="pscore">{score.w}</span>}
+                  </div>
+                  <div class="player loser">
+                    <span class="pname">{name(m.loser1_id)}</span>
+                    {score && (
+                      <span class="pscore">
+                        {score.l}{score.tb !== null ? <span class="tb">({score.tb})</span> : ''}
+                      </span>
+                    )}
+                  </div>
+                  {isWalkover && <div class="walkover-badge">W/O</div>}
+                  {m.notes?.includes('unconfirmed') && <div class="unconfirmed-badge">?</div>}
+                </div>
+                {ri < rounds.length - 1 && <div class="connector" />}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .bracket-scroll {
+    overflow-x: auto;
+    padding-bottom: 1rem;
+  }
+
+  .bracket {
+    display: flex;
+    gap: 0;
+    height: var(--bracket-h);
+    min-width: fit-content;
+  }
+
+  .round {
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+  }
+
+  .round-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #9ca3af;
+    padding: 0 12px 10px;
+    height: 28px;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .round-matches {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  .match-slot {
+    display: flex;
+    align-items: center;
+  }
+
+  .match {
+    flex: 1;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    margin: 0 12px;
+    position: relative;
+  }
+
+  .player {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 10px;
+    font-size: 0.88rem;
+  }
+
+  .player + .player {
+    border-top: 1px solid #f3f4f6;
+  }
+
+  .player.winner {
+    background: #f0fdf4;
+  }
+
+  .player.winner .pname {
+    font-weight: 600;
+    color: #15803d;
+  }
+
+  .player.loser .pname {
+    color: #6b7280;
+  }
+
+  .pscore {
+    font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+    font-size: 0.82rem;
+    color: #374151;
+    margin-left: 8px;
+    white-space: nowrap;
+  }
+
+  .player.loser .pscore {
+    color: #9ca3af;
+  }
+
+  .tb {
+    font-size: 0.72rem;
+    color: #9ca3af;
+    margin-left: 2px;
+  }
+
+  /* Connector lines between rounds */
+  .connector {
+    width: 24px;
+    height: 2px;
+    background: #d1d5db;
+    flex-shrink: 0;
+  }
+
+  .walkover-badge,
+  .unconfirmed-badge {
+    position: absolute;
+    top: 3px;
+    right: 5px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  .walkover-badge {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .unconfirmed-badge {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+</style>
