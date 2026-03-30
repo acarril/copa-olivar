@@ -55,7 +55,19 @@ const championName = champion
     align-items: center;
   }
 
-  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb a {
+    text-decoration: none;
+    padding-bottom: 2px;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-size: 100% 1.5px;
+    background-position: left bottom;
+    transition: background-size 0.4s ease;
+  }
+  .breadcrumb a:hover {
+    background-image: linear-gradient(var(--c-yellow), var(--c-yellow));
+    background-size: 100% 5px;
+  }
 
   h1 {
     font-family: var(--font-display);

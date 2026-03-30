@@ -48,13 +48,13 @@ function displayName(p) {
             <td class="cat-label">{cat.label}</td>
             <td class="champion">
               {champion && championId
-                ? <a href={`${base}/jugador/${championId}`}>{displayName(champion)}</a>
+                ? <a class="text-link" href={`${base}/jugador/${championId}`}>{displayName(champion)}</a>
                 : '—'}
             </td>
             <td class="score">{score ?? '—'}</td>
             <td class="runner-up">
               {runnerUp && runnerUpId
-                ? <a href={`${base}/jugador/${runnerUpId}`}>{displayName(runnerUp)}</a>
+                ? <a class="text-link" href={`${base}/jugador/${runnerUpId}`}>{displayName(runnerUp)}</a>
                 : '—'}
             </td>
             <td>

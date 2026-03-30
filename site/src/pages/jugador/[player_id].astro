@@ -183,7 +183,19 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
     gap: 0.4rem;
     align-items: center;
   }
-  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb a {
+    text-decoration: none;
+    padding-bottom: 2px;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-size: 100% 1.5px;
+    background-position: left bottom;
+    transition: background-size 0.4s ease;
+  }
+  .breadcrumb a:hover {
+    background-image: linear-gradient(var(--c-yellow), var(--c-yellow));
+    background-size: 100% 5px;
+  }
 
   .profile-card {
     background: #fff;
@@ -359,14 +371,34 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
   .cat-link {
     font-size: 0.85rem;
     color: var(--c-text);
+    text-decoration: none;
+    padding-bottom: 2px;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-size: 100% 1.5px;
+    background-position: left bottom;
+    transition: background-size 0.4s ease;
   }
-  .cat-link:hover { text-decoration: underline; }
+  .cat-link:hover {
+    background-image: linear-gradient(var(--c-yellow), var(--c-yellow));
+    background-size: 100% 5px;
+  }
 
   .player-link {
     font-weight: 600;
     color: var(--c-black);
+    text-decoration: none;
+    padding-bottom: 2px;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-size: 100% 1.5px;
+    background-position: left bottom;
+    transition: background-size 0.4s ease;
   }
-  .player-link:hover { text-decoration: underline; }
+  .player-link:hover {
+    background-image: linear-gradient(var(--c-yellow), var(--c-yellow));
+    background-size: 100% 5px;
+  }
 
   .score-cell {
     font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
