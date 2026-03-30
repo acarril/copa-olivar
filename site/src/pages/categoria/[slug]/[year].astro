@@ -1,14 +1,19 @@
 ---
-import Base from '../../layouts/Base.astro';
-import Bracket from '../../components/Bracket.astro';
-import { categories, matches, players, editions } from '../../lib/data.js';
+import Base from '../../../layouts/Base.astro';
+import Bracket from '../../../components/Bracket.astro';
+import { categories, matches, players, editions } from '../../../lib/data.js';
 
 export function getStaticPaths() {
   const maxYear = Math.max(...editions.map(e => Number(e.year)));
-  const currentEdition = editions.find(e => Number(e.year) === maxYear);
   return categories
-    .filter(cat => cat.edition_id === currentEdition.edition_id)
-    .map(cat => ({ params: { slug: cat.slug }, props: { cat } }));
+    .filter(cat => {
+      const edition = editions.find(e => e.edition_id === cat.edition_id);
+      return Number(edition?.year) !== maxYear;
+    })
+    .map(cat => {
+      const edition = editions.find(e => e.edition_id === cat.edition_id);
+      return { params: { slug: cat.slug, year: edition.year }, props: { cat } };
+    });
 }
 
 const { cat } = Astro.props;
@@ -20,12 +25,14 @@ const champion = final ? players[final.winner1_id] : null;
 const championName = champion
   ? (champion.nickname ? `${champion.nickname} ${champion.name.split(' ').at(-1)}` : champion.name.split(' ').slice(0,2).join(' '))
   : null;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
-<Base title={cat.label}>
+<Base title={`${cat.label} ${edition?.year}`}>
   <div class="header">
     <div class="breadcrumb">
-      <a href={import.meta.env.BASE_URL.replace(/\/$/, '') + '/'}>Olivar Open {edition?.year}</a>
+      <a href={`${base}/`}>Olivar Open {edition?.year}</a>
       <span>/</span>
     </div>
     <h1>{cat.label}</h1>

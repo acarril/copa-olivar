@@ -22,6 +22,15 @@ function parseCSV(filename) {
     });
 }
 
+export function slugify(name) {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 export const players    = Object.fromEntries(parseCSV('players.csv').map(p => [p.player_id, p]));
 export const editions   = parseCSV('editions.csv');
 export const categories = parseCSV('categories.csv');

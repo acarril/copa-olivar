@@ -1,4 +1,5 @@
 ---
+import { slugify } from '../lib/data.js';
 const { matches, players } = Astro.props;
 
 const PREV_ROUND: Record<string, string> = { F: 'SF', SF: 'QF', QF: 'R16' };
@@ -107,7 +108,8 @@ function displayName(id: string): string {
 }
 
 function playerUrl(id: string): string {
-  return `${base}/jugador/${id}`;
+  const p = (players as Record<string, Record<string, string>>)[id];
+  return `${base}/jugador/${p ? slugify(p.name) : id}`;
 }
 
 function parseScore(score: string): { w: string; l: string; tb: string | null } | null {

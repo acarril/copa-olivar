@@ -2,11 +2,11 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import Base from '../../layouts/Base.astro';
-import { players, matches, categories, editions } from '../../lib/data.js';
+import { players, matches, categories, editions, slugify } from '../../lib/data.js';
 
 export function getStaticPaths() {
   return Object.values(players).map((p: any) => ({
-    params: { player_id: p.player_id },
+    params: { player_id: slugify(p.name) },
     props: { player: p },
   }));
 }
@@ -19,6 +19,14 @@ const ROUND_LABELS: Record<string, string> = {
 };
 
 const catById = Object.fromEntries(categories.map((c: any) => [c.category_id, c]));
+const editionById = Object.fromEntries(editions.map((e: any) => [e.edition_id, e]));
+const currentYear = Math.max(...editions.map((e: any) => Number(e.year)));
+function catUrl(cat: any): string {
+  const year = Number(editionById[cat.edition_id]?.year);
+  return year === currentYear
+    ? `${base}/categoria/${cat.slug}`
+    : `${base}/categoria/${cat.slug}/${year}`;
+}
 
 const playerMatches = matches.filter((m: any) =>
   m.winner1_id === player.player_id || m.loser1_id === player.player_id
@@ -29,9 +37,13 @@ const losses = playerMatches.filter((m: any) => m.loser1_id === player.player_id
 const winPct = playerMatches.length > 0 ? Math.round(wins.length / playerMatches.length * 100) : null;
 const titles = wins.filter((m: any) => m.round === 'F');
 
-const sortedMatches = [...playerMatches].sort((a: any, b: any) =>
-  parseInt(a.match_id.slice(1)) - parseInt(b.match_id.slice(1))
-);
+const ROUND_RANK: Record<string, number> = { R16: 1, QF: 2, SF: 3, '3P': 3, F: 4 };
+const sortedMatches = [...playerMatches].sort((a: any, b: any) => {
+  const yearA = Number(editionById[catById[a.category_id]?.edition_id]?.year);
+  const yearB = Number(editionById[catById[b.category_id]?.edition_id]?.year);
+  if (yearB !== yearA) return yearB - yearA;
+  return (ROUND_RANK[b.round] ?? 0) - (ROUND_RANK[a.round] ?? 0);
+});
 
 function displayName(p: any): string {
   if (!p) return '—';
@@ -109,7 +121,7 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
       <h2>Categorías</h2>
       <div class="cat-list">
         {playedCategories.map((cat: any) => (
-          <a href={`${base}/categoria/${cat.slug}`} class="cat-pill">
+          <a href={catUrl(cat)} class="cat-pill">
             {cat.label} →
           </a>
         ))}
@@ -125,6 +137,7 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
           <tr>
             <th>Res.</th>
             <th>Ronda</th>
+            <th>Año</th>
             <th>Categoría</th>
             <th>Rival</th>
             <th>Marcador</th>
@@ -136,23 +149,26 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
             const opponentId = isWin ? m.loser1_id : m.winner1_id;
             const opponent = (players as any)[opponentId];
             const cat = catById[m.category_id];
+            const year = Number(editionById[cat?.edition_id]?.year);
+            const isCurrent = year === currentYear;
             return (
-              <tr>
+              <tr class={isCurrent ? 'row-current' : 'row-historical'}>
                 <td>
                   <span class={isWin ? 'badge win' : 'badge loss'}>
                     {isWin ? 'V' : 'D'}
                   </span>
                 </td>
                 <td class="round-cell">{ROUND_LABELS[m.round] ?? m.round}</td>
+                <td class="year-cell">{year || '—'}</td>
                 <td>
                   {cat
-                    ? <a href={`${base}/categoria/${cat.slug}`} class="cat-link">{cat.label}</a>
+                    ? <a href={catUrl(cat)} class="cat-link">{cat.label}</a>
                     : '—'
                   }
                 </td>
                 <td>
                   {opponent
-                    ? <a href={`${base}/jugador/${opponentId}`} class="player-link">{displayName(opponent)}</a>
+                    ? <a href={`${base}/jugador/${slugify(opponent.name)}`} class="player-link">{displayName(opponent)}</a>
                     : '—'
                   }
                 </td>
@@ -366,7 +382,16 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
   .badge.win { background: var(--c-green); color: var(--c-black); }
   .badge.loss { background: var(--c-bg); color: var(--c-text); }
 
+  tr.row-current td { background: var(--c-bg); }
+  tr.row-historical td { background: #fff; }
+
   .round-cell { color: var(--c-text); font-size: 0.85rem; }
+
+  .year-cell {
+    font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+    font-size: 0.82rem;
+    color: var(--c-text);
+  }
 
   .cat-link {
     font-size: 0.85rem;
