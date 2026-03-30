@@ -97,16 +97,15 @@ interface Connector {
 
 function buildConnectors(nextItems: RoundItem[]): Connector[] {
   const result: Connector[] = [];
-  let cumSlots = 0;
   for (const item of nextItems) {
-    const { upperSlots, lowerSlots, slots } = item;
+    const { upperSlots, lowerSlots, slots, topOffset } = item;
     if (upperSlots !== null && lowerSlots !== null) {
-      const topY = cumSlots * BASE_H;
+      const topY = topOffset * BASE_H;
       const upperCY = topY + (upperSlots / 2) * BASE_H;
       const lowerCY = topY + (upperSlots + lowerSlots / 2) * BASE_H;
-      result.push({ upperCY, lowerCY, midY: (upperCY + lowerCY) / 2 });
+      const midY  = topY + (slots / 2) * BASE_H;
+      result.push({ upperCY, lowerCY, midY });
     }
-    cumSlots += slots;
   }
   return result;
 }
