@@ -48,6 +48,17 @@ const playedCategories = [...new Set(playerMatches.map((m: any) => m.category_id
   .map((id: any) => catById[id])
   .filter(Boolean);
 
+function reverseScore(score: string): string {
+  if (!score) return score;
+  // Super tiebreak format: [10-7] → [7-10]
+  const st = score.match(/^\[(\d+)-(\d+)\]$/);
+  if (st) return `[${st[2]}-${st[1]}]`;
+  // Standard format: 6-3 or 6-5(4) → 3-6 or 5-6(4)
+  const s = score.match(/^(\d+)-(\d+)(\(\d+\))?$/);
+  if (s) return `${s[2]}-${s[1]}${s[3] ?? ''}`;
+  return score;
+}
+
 // Avatar color cycles through design system palette based on player number
 const AVATAR_COLORS = ['var(--c-blue)', 'var(--c-green)', 'var(--c-pink)', 'var(--c-yellow)'];
 const avatarColor = AVATAR_COLORS[(parseInt(player.player_id.slice(1)) - 1) % 4];
@@ -166,7 +177,7 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
                   }
                 </td>
                 <td class="score-cell">
-                  {m.score || '—'}
+                  {m.score ? (isWin ? m.score : reverseScore(m.score)) : '—'}
                   {m.notes?.includes('unconfirmed') && <span class="unconfirmed">?</span>}
                 </td>
               </tr>
