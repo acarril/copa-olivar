@@ -1,10 +1,13 @@
 ---
-import Base from '../../../layouts/Base.astro';
-import Bracket from '../../../components/Bracket.astro';
-import { categories, matches, players, editions, slugify, displayName } from '../../../lib/data.js';
+import Base from '../../layouts/Base.astro';
+import Bracket from '../../components/Bracket.astro';
+import { categories, matches, players, editions, slugify, displayName } from '../../lib/data.js';
 
 export function getStaticPaths() {
-  return [];
+  return categories.map(cat => {
+    const edition = editions.find(e => e.edition_id === cat.edition_id);
+    return { params: { year: edition.year, slug: cat.slug }, props: { cat } };
+  });
 }
 
 const { cat } = Astro.props;
@@ -21,7 +24,9 @@ const championUrl = champion ? `${base}/jugador/${slugify(champion.name, champio
 <Base title={`${cat.label} ${edition?.year}`}>
   <div class="header">
     <div class="breadcrumb">
-      <a href={`${base}/`}>Abierto de Tenis Olivar {edition?.year}</a>
+      <a href={`${base}/`}>Abierto de Tenis Olivar</a>
+      <span>/</span>
+      <a href={`${base}/${edition?.year}/`}>{edition?.year}</a>
       <span>/</span>
     </div>
     <h1>{cat.label}</h1>

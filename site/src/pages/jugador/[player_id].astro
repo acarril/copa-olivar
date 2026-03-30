@@ -21,11 +21,10 @@ const ROUND_LABELS: Record<string, string> = {
 const catById = Object.fromEntries(categories.map((c: any) => [c.category_id, c]));
 const editionById = Object.fromEntries(editions.map((e: any) => [e.edition_id, e]));
 const currentYear = Math.max(...editions.map((e: any) => Number(e.year)));
+
 function catUrl(cat: any): string {
-  const year = Number(editionById[cat.edition_id]?.year);
-  return year === currentYear
-    ? `${base}/categoria/${cat.slug}`
-    : `${base}/categoria/${cat.slug}/${year}`;
+  const year = editionById[cat.edition_id]?.year;
+  return `${base}/${year}/${cat.slug}`;
 }
 
 const playerMatches = matches.filter((m: any) =>
@@ -115,7 +114,7 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
       <div class="cat-list">
         {playedCategories.map((cat: any) => (
           <a href={catUrl(cat)} class="cat-pill">
-            {cat.label} {editionById[cat.edition_id]?.year} →
+            {cat.label} {editionById[cat.edition_id]?.year}
           </a>
         ))}
       </div>

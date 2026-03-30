@@ -4,11 +4,7 @@ import Bracket from '../../components/Bracket.astro';
 import { categories, matches, players, editions, slugify, displayName } from '../../lib/data.js';
 
 export function getStaticPaths() {
-  const maxYear = Math.max(...editions.map(e => Number(e.year)));
-  const currentEdition = editions.find(e => Number(e.year) === maxYear);
-  return categories
-    .filter(cat => cat.edition_id === currentEdition.edition_id)
-    .map(cat => ({ params: { slug: cat.slug }, props: { cat } }));
+  return [];
 }
 
 const { cat } = Astro.props;
