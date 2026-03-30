@@ -10,7 +10,7 @@ const ROUND_LABELS: Record<string, string> = {
 const BASE_H = 54;   // px per player slot
 const LABEL_H = 28;  // px for round-label header
 const CONN_W = 20;   // px width of connector SVG column
-const MATCH_MARGIN = 12; // left margin on .match cards (output arm must reach this far)
+const COL_GAP = 12;  // gap between round columns and connector SVG (replaces match margin)
 
 // --- Tree types ---
 interface MatchRow { [k: string]: string }
@@ -157,14 +157,14 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
                 const mx = CONN_W / 2;
                 return (
                   <>
-                    {/* upper arm */}
-                    <line x1="0" y1={upperCY} x2={mx} y2={upperCY} />
+                    {/* upper arm — extends left into col-gap to reach the match card */}
+                    <line x1={-COL_GAP} y1={upperCY} x2={mx} y2={upperCY} />
                     {/* spine */}
                     <line x1={mx} y1={upperCY} x2={mx} y2={lowerCY} />
-                    {/* lower arm */}
-                    <line x1="0" y1={lowerCY} x2={mx} y2={lowerCY} />
-                    {/* output to next round — extend past SVG edge to reach the match card */}
-                    <line x1={mx} y1={midY} x2={CONN_W + MATCH_MARGIN} y2={midY} />
+                    {/* lower arm — same length as upper arm */}
+                    <line x1={-COL_GAP} y1={lowerCY} x2={mx} y2={lowerCY} />
+                    {/* output arm — same length, extends right into col-gap */}
+                    <line x1={mx} y1={midY} x2={CONN_W + COL_GAP} y2={midY} />
                   </>
                 );
               })}
@@ -182,6 +182,7 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
 
   .bracket {
     display: flex;
+    column-gap: 12px;
     min-width: fit-content;
   }
 
@@ -224,7 +225,7 @@ function parseScore(score: string): { w: string; l: string; tb: string | null } 
     overflow: hidden;
     background: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    margin: 0 0 0 12px;
+    margin: 0;
     position: relative;
   }
 
