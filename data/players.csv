@@ -1,29 +1,29 @@
-player_id,name,nickname,gender,birth_year,family_id
-p1,Andres Galilea,Ness,M,,
-p2,Juan Pablo Gonzalez,JP,M,,
-p3,Jaime Herrera,Jimmy,M,,
-p4,Sebastian Valenzuela,,M,,
-p5,Jorge Brown,,M,,
-p6,Alvaro Carril,,M,,
-p7,Agustin Melero,,M,,
-p8,Santiago Ovalle,Tatalo,M,,
-p9,Rafael Galilea,Rafa,M,,
-p10,Camilo Valenzuela,,M,,
-p11,Domingo Ruiz Tagle,Chuma,M,,
-p12,Andres Galilea Jr.,,M,,
-p13,Vicente Ruiz Tagle,Vicho,M,,
-p14,Jorge Correa,,M,,
-p15,Juan de Arrizabalaga,,M,,
-p16,Santiago Valenzuela,,M,,
-p17,Paulo Olivares,,M,,
-p18,Tomas Melero,,M,,
-p19,Maru Eyzaguirre,,F,,
-p20,Slavka Chelebifski,,F,,
-p21,Catalina Picon,Cata,F,,
-p22,Alejandrina Correa,,F,,
-p23,Francisca Ross,Fran,F,,
-p24,Magdalena Correa,Maida,F,,
-p25,Eugenia Ruiz Tagle,Uge,F,,
-p26,Macarena Ruiz Tagle,Maca,F,,
-p27,Isidora Undurraga,Isi,F,,
-p28,José Pérez,Pepe,M,,
+player_id,name,surname,nickname,gender,birth_year,family_id,nickname_only
+p1,Andres,Galilea,Ness,M,,,true
+p2,Juan Pablo,Gonzalez,JP,M,,,false
+p3,Jaime,Herrera,Jimmy,M,,,true
+p4,Sebastian,Valenzuela,,M,,,false
+p5,Jorge,Brown,,M,,,false
+p6,Alvaro,Carril,,M,,,false
+p7,Agustin,Melero,,M,,,false
+p8,Santiago,Ovalle,Tatalo,M,,,false
+p9,Rafael,Galilea,Rafa,M,,,false
+p10,Camilo,Valenzuela,,M,,,false
+p11,Domingo,Ruiz Tagle,Chuma,M,,,false
+p12,Andres,Galilea Jr.,,M,,,false
+p13,Vicente,Ruiz Tagle,Vicho,M,,,false
+p14,Jorge,Correa,,M,,,false
+p15,Juan,de Arrizabalaga,,M,,,false
+p16,Santiago,Valenzuela,,M,,,false
+p17,Paulo,Olivares,,M,,,false
+p18,Tomas,Melero,,M,,,false
+p19,Maru,Eyzaguirre,,F,,,false
+p20,Slavka,Chelebifski,,F,,,false
+p21,Catalina,Picon,Cata,F,,,false
+p22,Alejandrina,Correa,,F,,,false
+p23,Francisca,Ross,Fran,F,,,false
+p24,Magdalena,Correa,Maida,F,,,false
+p25,Eugenia,Ruiz Tagle,Uge,F,,,false
+p26,Macarena,Ruiz Tagle,Maca,F,,,false
+p27,Isidora,Undurraga,Isi,F,,,false
+p28,José,Pérez,Pepe,M,,,false
