@@ -34,40 +34,42 @@ const rows = editionCats.map(cat => {
 
   <section class="card">
     <h2>Campeones</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Categoría</th>
-          <th>Campeón/a</th>
-          <th>Final</th>
-          <th>Finalista</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map(({ cat, champion, runnerUp, score }) => (
+    <div class="table-wrap">
+      <table>
+        <thead>
           <tr>
-            <td class="cat-label">{cat.label}</td>
-            <td class="champion">
-              {champion
-                ? <a class="text-link" href={`${base}/jugador/${slugify(champion.name, champion.surname)}`}>{displayName(champion)}</a>
-                : '—'}
-            </td>
-            <td class="score">{score ?? '—'}</td>
-            <td class="runner-up">
-              {runnerUp
-                ? <a class="text-link" href={`${base}/jugador/${slugify(runnerUp.name, runnerUp.surname)}`}>{displayName(runnerUp)}</a>
-                : '—'}
-            </td>
-            <td>
-              <a href={`${base}/${edition.year}/${cat.slug}`} class="draw-link">
-                Cuadro
-              </a>
-            </td>
+            <th>Categoría</th>
+            <th>Campeón/a</th>
+            <th>Final</th>
+            <th class="hide-mobile">Finalista</th>
+            <th class="hide-mobile"></th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {rows.map(({ cat, champion, runnerUp, score }) => (
+            <tr>
+              <td class="cat-label"><a class="text-link" href={`${base}/${edition.year}/${cat.slug}`}>{cat.label}</a></td>
+              <td class="champion">
+                {champion
+                  ? <a class="text-link" href={`${base}/jugador/${slugify(champion.name, champion.surname)}`}>{displayName(champion)}</a>
+                  : '—'}
+              </td>
+              <td class="score">{score ?? '—'}</td>
+              <td class="runner-up hide-mobile">
+                {runnerUp
+                  ? <a class="text-link" href={`${base}/jugador/${slugify(runnerUp.name, runnerUp.surname)}`}>{displayName(runnerUp)}</a>
+                  : '—'}
+              </td>
+              <td class="hide-mobile">
+                <a href={`${base}/${edition.year}/${cat.slug}`} class="draw-link">
+                  Cuadro
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   </section>
 </Base>
 
@@ -127,6 +129,8 @@ const rows = editionCats.map(cat => {
     margin-bottom: 1rem;
   }
 
+  .table-wrap { overflow-x: auto; }
+
   table {
     width: 100%;
     border-collapse: collapse;
@@ -140,12 +144,12 @@ const rows = editionCats.map(cat => {
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--c-text);
-    padding: 0 0 0.6rem;
+    padding: 0 0.8rem 0.6rem 0;
     border-bottom: var(--border);
   }
 
   td {
-    padding: 0.65rem 0;
+    padding: 0.65rem 0.8rem 0.65rem 0;
     border-bottom: 1px solid #e5e7eb;
   }
 
@@ -175,5 +179,9 @@ const rows = editionCats.map(cat => {
   .draw-link:hover {
     box-shadow: var(--shadow-card);
     transform: translate(-2px, -2px);
+  }
+
+  @media (max-width: 600px) {
+    .hide-mobile { display: none; }
   }
 </style>
