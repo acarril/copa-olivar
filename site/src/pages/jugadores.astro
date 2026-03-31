@@ -1,0 +1,255 @@
+---
+import Base from '../layouts/Base.astro';
+import { players, matches, displayName, slugify } from '../lib/data.js';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const AVATAR_COLORS = ['var(--c-blue)', 'var(--c-green)', 'var(--c-pink)', 'var(--c-yellow)'];
+
+// Sort by surname
+const sortedPlayers = (Object.values(players) as any[]).sort((a, b) =>
+  a.surname.localeCompare(b.surname, 'es')
+);
+
+// Precompute win/title counts
+const winsByPlayer: Record<string, number> = {};
+const titlesByPlayer: Record<string, number> = {};
+for (const p of Object.values(players) as any[]) {
+  const pid = p.player_id;
+  const wins = (matches as any[]).filter(m => m.winner1_id === pid || m.winner2_id === pid);
+  winsByPlayer[pid] = wins.length;
+  titlesByPlayer[pid] = wins.filter(m => m.round === 'F').length;
+}
+---
+
+<Base title="Jugadores">
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Jugadores</h1>
+      <p>{sortedPlayers.length} participantes · Copa Olivar</p>
+    </div>
+  </section>
+
+  <div class="search-wrap">
+    <input
+      type="search"
+      id="player-search"
+      placeholder="Buscar jugador..."
+      autocomplete="off"
+      spellcheck="false"
+    />
+  </div>
+
+  <div class="players-grid" id="players-grid">
+    {sortedPlayers.map((p: any) => {
+      const idx = parseInt(p.player_id.slice(1)) - 1;
+      const color = AVATAR_COLORS[idx % 4];
+      const initials = `${p.name} ${p.surname}`.split(' ').filter(Boolean).slice(0, 2).map((w: string) => w[0]).join('');
+      const slug = slugify(p.name, p.surname);
+      const wins = winsByPlayer[p.player_id] ?? 0;
+      const titles = titlesByPlayer[p.player_id] ?? 0;
+      const searchKey = `${p.name} ${p.surname} ${p.nickname ?? ''}`.toLowerCase();
+      return (
+        <a
+          href={`${base}/jugador/${slug}`}
+          class="player-card"
+          data-search={searchKey}
+        >
+          <div class="card-avatar" style={`background: ${color}`}>{initials}</div>
+          <div class="card-info">
+            <span class="card-surname">{p.surname}</span>
+            <span class="card-name">{p.name}</span>
+            {p.nickname && <span class="card-nick">{p.nickname}</span>}
+          </div>
+          <div class="card-stats">
+            {titles > 0 && (
+              <span class="stat-pill gold" title="Títulos">&#10032; {titles}</span>
+            )}
+            <span class="stat-pill" title="Victorias">{wins}V</span>
+          </div>
+        </a>
+      );
+    })}
+  </div>
+
+  <p class="no-results" id="no-results" hidden>No se encontraron jugadores.</p>
+</Base>
+
+<style>
+  .hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    color: var(--c-black);
+    line-height: 1.1;
+  }
+
+  .hero p {
+    font-size: 1rem;
+    color: var(--c-text);
+    margin-top: 0.35rem;
+    font-weight: 300;
+  }
+
+  .search-wrap {
+    margin-bottom: 1.75rem;
+  }
+
+  #player-search {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    border: var(--border);
+    box-shadow: var(--shadow-card);
+    background: #fff;
+    color: var(--c-black);
+    outline: none;
+    transition: box-shadow 0.1s;
+  }
+
+  #player-search:focus {
+    box-shadow: var(--shadow-hover);
+  }
+
+  #player-search::placeholder {
+    color: #aaa;
+    font-weight: 400;
+  }
+
+  .players-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  @media (max-width: 640px) {
+    .players-grid { grid-template-columns: repeat(2, 1fr); }
+    .page-header h1 { font-size: 2.2rem; }
+  }
+
+  @media (max-width: 380px) {
+    .players-grid { grid-template-columns: 1fr; }
+  }
+
+  .player-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #fff;
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    transition: box-shadow 0.1s, transform 0.1s;
+  }
+
+  .player-card:hover {
+    box-shadow: var(--shadow-card);
+    transform: translate(-2px, -2px);
+  }
+
+  .card-avatar {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--c-black);
+  }
+
+  .card-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+  }
+
+  .card-surname {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--c-black);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-name {
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: var(--c-text);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-nick {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #aaa;
+    font-style: italic;
+    line-height: 1;
+  }
+
+  .card-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    flex-shrink: 0;
+  }
+
+  .stat-pill {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border: 1.5px solid var(--c-black);
+    background: var(--c-bg);
+    color: var(--c-black);
+    white-space: nowrap;
+  }
+
+  .stat-pill.gold {
+    background: var(--c-yellow);
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 3rem 0;
+    color: var(--c-text);
+    font-size: 0.9rem;
+  }
+</style>
+
+<script is:inline>
+  var input = document.getElementById('player-search');
+  var grid = document.getElementById('players-grid');
+  var noResults = document.getElementById('no-results');
+
+  input.addEventListener('input', function () {
+    var q = this.value.toLowerCase().trim();
+    var cards = grid.querySelectorAll('.player-card');
+    var visible = 0;
+    cards.forEach(function (card) {
+      var match = !q || card.dataset.search.includes(q);
+      card.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    noResults.hidden = visible > 0;
+  });
+</script>

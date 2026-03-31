@@ -76,7 +76,7 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
   <div class="breadcrumb">
     <a href={`${base}/`}>Copa Olivar</a>
     <span>/</span>
-    <span>Jugadores</span>
+    <a href={`${base}/jugadores`}>Jugadores</a>
     <span>/</span>
   </div>
 
@@ -90,11 +90,14 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
       {player.nickname && <span class="nickname">{player.nickname}</span>}
       {titles.length > 0 && (
         <div class="titles">
-          {titles.map((m: any) => (
-            <span class="title-badge">
-              &#10032; {catById[m.category_id]?.label ?? 'Campeón'} {editionById[catById[m.category_id]?.edition_id]?.year}
-            </span>
-          ))}
+          {titles.map((m: any) => {
+            const cat = catById[m.category_id];
+            return (
+              <a href={cat ? catUrl(cat) : undefined} class="title-badge">
+                &#10032; {cat?.label ?? 'Campeón'} {editionById[cat?.edition_id]?.year}
+              </a>
+            );
+          })}
         </div>
       )}
     </div>
@@ -272,11 +275,17 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
   .title-badge {
     font-size: 0.78rem;
     font-weight: 700;
-    background: var(--c-yellow);
+    background: var(--c-blue);
     border: var(--border);
     box-shadow: var(--shadow-sm);
     padding: 0.2rem 0.6rem;
     color: var(--c-black);
+    text-decoration: none;
+    transition: box-shadow 0.1s, transform 0.1s;
+  }
+  .title-badge:hover {
+    box-shadow: var(--shadow-card);
+    transform: translate(-2px, -2px);
   }
 
   .stats-row {
@@ -340,7 +349,7 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
   .cat-pill {
     font-size: 0.82rem;
     font-weight: 600;
-    background: var(--c-blue);
+    background: var(--c-cream);
     border: var(--border);
     box-shadow: var(--shadow-sm);
     padding: 0.25rem 0.65rem;
