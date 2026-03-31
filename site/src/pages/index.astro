@@ -48,7 +48,7 @@ const editionData = sortedEditions.map(edition => {
           <tbody>
             {rows.map(({ cat, champion, runnerUp, score }) => (
               <tr>
-                <td class="cat-label"><a class="cat-link" href={`${base}/${edition.year}/${cat.slug}`}>{cat.label}</a></td>
+                <td class="cat-label"><a class="cat-badge" href={`${base}/${edition.year}/${cat.slug}`}>{cat.label}</a></td>
                 <td class="champion">
                   {champion
                     ? <a class="text-link" href={`${base}/jugador/${slugify(champion.name, champion.surname)}`}>{displayName(champion)}</a>
@@ -164,23 +164,6 @@ const editionData = sortedEditions.map(edition => {
   }
   .runner-up { color: var(--c-text); font-weight: 300; }
 
-  .cat-link {
-    display: inline-block;
-    font-size: 0.78rem;
-    font-weight: 600;
-    white-space: nowrap;
-    padding: 0.2rem 0.6rem;
-    background: var(--c-blue);
-    border: var(--border);
-    box-shadow: var(--shadow-sm);
-    color: var(--c-black);
-    text-decoration: none;
-    transition: box-shadow 0.1s, transform 0.1s;
-  }
-  .cat-link:hover {
-    box-shadow: var(--shadow-card);
-    transform: translate(-2px, -2px);
-  }
 
   .table-wrap { overflow-x: auto; }
 
