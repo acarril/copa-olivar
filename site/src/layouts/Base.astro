@@ -8,7 +8,7 @@ const baseClean = base.replace(/\/$/, '');
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{title ? `${title} — Copa Olivar` : 'Copa Olivar'}</title>
+  <title>{title ? `${title} — Abierto Olivar` : 'Abierto Olivar'}</title>
   <link rel="icon" type="image/svg+xml" href={`${baseClean}/favicon.png`} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -250,7 +250,7 @@ const baseClean = base.replace(/\/$/, '');
     </div>
     <div class="modal-body">
       <form id="suggest-form" action="https://formspree.io/f/mwvwoyqp" method="POST">
-        <input type="hidden" name="_subject" id="form-subject" value="Sugerencia — Copa Olivar">
+        <input type="hidden" name="_subject" id="form-subject" value="Sugerencia — Abierto Olivar">
         <input type="hidden" name="partido" id="form-match" value="">
         <input type="hidden" name="categoria" id="form-context" value="">
         <div class="form-group">
@@ -296,7 +296,7 @@ const baseClean = base.replace(/\/$/, '');
         title.textContent = 'Contribuir';
         matchInput.value = '';
         contextInput.value = '';
-        subjectInput.value = 'Sugerencia — Copa Olivar';
+        subjectInput.value = 'Sugerencia — Abierto Olivar';
       }
 
       document.getElementById('suggest-form').hidden = false;
