@@ -12,14 +12,37 @@ The player pool is a large extended family of seven branches: Correa, Ruiz Tagle
 
 ```
 data/
-├── players.csv       # All players across all editions
-├── families.csv      # The seven family branches
-├── editions.csv      # One row per annual tournament
-├── categories.csv    # Categories offered per edition, with format type
-├── entries.csv       # Which players entered which category (includes seedings)
-├── matches.csv       # All match results
-└── relationships.csv # Known family relationships between players
+├── players.csv         # All players across all editions
+├── families.csv        # The seven family branches
+├── editions.csv        # One row per annual tournament
+├── categories.csv      # Timeless category definitions (Femenino, Exportación, etc.)
+├── tournaments.csv     # One row per category × edition (the actual draw)
+├── entries.csv         # Which players entered which category (includes seedings)
+├── matches.csv         # All match results
+└── relationships.csv   # Known family relationships between players
 ```
+
+### categories.csv
+A category type is the timeless flavor of a draw (e.g. "Femenino", "Masculino Nacional"). It exists independently of any edition — you can reference it when talking about rules, history, or eligibility across years.
+
+| Column | Description |
+|---|---|
+| `category_id` | Unique ID (e.g. `ct1`) |
+| `name` | Machine-readable name (e.g. `womens_singles`) |
+| `label` | Human-readable name in Spanish |
+| `default_format` | Default score format — see below |
+| `slug` | Short Spanish URL-friendly name (e.g. `femenino`) |
+
+### tournaments.csv
+A tournament is a specific draw: one category type in one edition (e.g. "the 2026 Femenino"). Foreign key `category_id` is used in `entries.csv` and `matches.csv`.
+
+| Column | Description |
+|---|---|
+| `tournament_id` | Unique ID (e.g. `1`) |
+| `edition_id` | Which edition |
+| `category_id` | Which category |
+| `format` | Score format override; if blank, inherits `default_format` from category type |
+| `notes` | Anything worth flagging |
 
 ### players.csv
 | Column | Description |
@@ -35,15 +58,6 @@ data/
 ### editions.csv
 One row per year the tournament was held.
 
-### categories.csv
-| Column | Description |
-|---|---|
-| `category_id` | Unique ID |
-| `edition_id` | Which edition |
-| `name` | Machine-readable name (e.g. `mens_singles_exportacion`) |
-| `label` | Human-readable name in Spanish |
-| `format` | Score format — see below |
-
 ### entries.csv
 One row per player per category per edition. Captures participation and seedings.
 
@@ -51,7 +65,7 @@ One row per player per category per edition. Captures participation and seedings
 | Column | Description |
 |---|---|
 | `match_id` | Unique ID (e.g. `m1`) |
-| `edition_id` / `category_id` | Foreign keys |
+| `edition_id` / `tournament_id` | Foreign keys |
 | `round` | `R16`, `QF`, `SF`, `3P`, `F` |
 | `winner1_id` | Winner (singles) or first player of winning pair (doubles) |
 | `winner2_id` | Second player of winning pair; blank for singles |
@@ -86,7 +100,7 @@ Finals tiebreaks require a 2-point margin (no golden point). Record the actual f
 
 To add results for a new edition:
 1. Add a row to `editions.csv`.
-2. Add rows to `categories.csv` for that edition's categories and formats.
+2. Add rows to `tournaments.csv` for that edition's categories and formats.
 3. Add any new players to `players.csv` (full name in `name`, common name in `nickname`).
 4. Add entries to `entries.csv`, including seeds where applicable.
 5. Add matches to `matches.csv`, one row per match, using the score notation above.

@@ -38,8 +38,20 @@ export function slugify(name, surname) {
     .replace(/^-|-$/g, '');
 }
 
-export const players    = Object.fromEntries(parseCSV('players.csv').map(p => [p.player_id, p]));
-export const editions   = parseCSV('editions.csv');
+export const players       = Object.fromEntries(parseCSV('players.csv').map(p => [p.player_id, p]));
+export const editions      = parseCSV('editions.csv');
 export const categories = parseCSV('categories.csv');
 export const matches    = parseCSV('matches.csv');
 export const entries    = parseCSV('entries.csv');
+
+const _categoryById = Object.fromEntries(categories.map(c => [c.category_id, c]));
+export const tournaments = parseCSV('tournaments.csv').map(t => {
+  const cat = _categoryById[t.category_id] ?? {};
+  return {
+    ...t,
+    name:   cat.name   ?? '',
+    label:  cat.label  ?? '',
+    slug:   cat.slug   ?? '',
+    format: t.format   || cat.default_format || '',
+  };
+});

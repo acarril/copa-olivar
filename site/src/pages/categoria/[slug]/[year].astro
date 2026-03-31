@@ -1,7 +1,7 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import Bracket from '../../../components/Bracket.astro';
-import { categories, matches, players, editions, slugify, displayName } from '../../../lib/data.js';
+import { tournaments, matches, players, editions, slugify, displayName } from '../../../lib/data.js';
 
 export function getStaticPaths() {
   return [];
@@ -10,7 +10,7 @@ export function getStaticPaths() {
 const { cat } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const edition = editions.find(e => e.edition_id === cat.edition_id);
-const catMatches = matches.filter(m => m.category_id === cat.category_id);
+const catMatches = matches.filter(m => m.tournament_id === cat.tournament_id);
 
 const final = catMatches.find(m => m.round === 'F');
 const champion = final ? players[final.winner1_id] : null;

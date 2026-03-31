@@ -1,4 +1,4 @@
-match_id,edition_id,category_id,round,winner1_id,winner2_id,loser1_id,loser2_id,score,referee_id,walkover,notes
+match_id,edition_id,tournament_id,round,winner1_id,winner2_id,loser1_id,loser2_id,score,referee_id,walkover,notes
 m1,1,1,QF,p1,,p5,,6-1,,,
 m2,1,1,QF,p2,,p6,,6-1,,,
 m3,1,1,QF,p3,,p7,,6-4,,,

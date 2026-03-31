@@ -1,15 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
-import { editions, categories, matches, players, slugify, displayName } from '../lib/data.js';
+import { editions, tournaments, matches, players, slugify, displayName } from '../lib/data.js';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const sortedEditions = [...editions].sort((a, b) => Number(b.year) - Number(a.year));
 const currentYear = Math.max(...sortedEditions.map(e => Number(e.year)));
 
 const editionData = sortedEditions.map(edition => {
-  const editionCats = categories.filter(c => c.edition_id === edition.edition_id);
+  const editionCats = tournaments.filter(c => c.edition_id === edition.edition_id);
   const rows = editionCats.map(cat => {
-    const final = matches.find(m => m.category_id === cat.category_id && m.round === 'F');
+    const final = matches.find(m => m.tournament_id === cat.tournament_id && m.round === 'F');
     return {
       cat,
       champion: final ? players[final.winner1_id] : null,

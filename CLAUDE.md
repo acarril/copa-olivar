@@ -8,8 +8,9 @@ This repo stores historical match data for the Olivar Open family tennis tournam
 - Match IDs: `m1`, `m2`, ... — always check the last used ID in `matches.csv` before adding new matches.
 - Entry IDs: plain integers, sequential — check last used in `entries.csv`.
 - Family IDs: `f1`–`f7` — fixed, defined in `families.csv`.
-- Category IDs: sequential integers — check `categories.csv`.
-- Category slugs: short Spanish URL-friendly name (e.g. `exportacion`, `nacional`, `femenino`, `mixto`, `junior`) — used as the URL path for the bracket page.
+- Category type IDs: `ct1`, `ct2`, ... — fixed, defined in `categories.csv`. These are the timeless category flavors (e.g. Femenino, Exportación). Add new ones only when a genuinely new draw type is introduced.
+- Tournament IDs: sequential integers — check `tournaments.csv`. Each row is one category × one edition (the actual draw).
+- Category slugs: short Spanish URL-friendly name (e.g. `exportacion`, `nacional`, `femenino`, `mixto`, `junior`) — defined on the category type, used as the URL path for the bracket page.
 - Edition IDs: sequential integers — check `editions.csv`.
 
 ## Data entry conventions
@@ -24,13 +25,13 @@ This repo stores historical match data for the Olivar Open family tennis tournam
 ## Current state (as of edition 10, 2026)
 
 ### Entered
-- `mens_singles_exportacion` (category_id=1): complete. Winner: JP (p2).
-- `mens_singles_nacional` (category_id=2): complete. Winner: Chuma (p11).
-- `womens_singles` (category_id=3): complete. Winner: Isi (p27).
+- `mens_singles_exportacion` (tournament_id=1): complete. Winner: JP (p2).
+- `mens_singles_nacional` (tournament_id=2): complete. Winner: Chuma (p11).
+- `womens_singles` (tournament_id=3): complete. Winner: Isi (p27).
 
 ### Pending
-- `mixed_doubles` (category_id=4): not yet entered.
-- `jr_doubles` (category_id=5): not yet entered.
+- `mixed_doubles` (tournament_id=4): not yet entered.
+- `jr_doubles` (tournament_id=5): not yet entered.
 - `referee_id` fields: left blank across all matches; to be filled in later.
 - `family_id` on players: column exists but all values are blank; assignment deferred.
 

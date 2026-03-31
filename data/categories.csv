@@ -1,9 +1,6 @@
-category_id,edition_id,name,label,format,slug,notes
-1,1,mens_singles_exportacion,Masculino Exportación,single_set_noad,exportacion,
-2,1,mens_singles_nacional,Masculino Nacional,single_set_noad,nacional,
-3,1,womens_singles,Femenino,single_set_noad,femenino,
-4,1,mixed_doubles,Adultos Mixto,super_tiebreak_noad,mixto,
-5,1,jr_doubles,Adulto Junior,super_tiebreak_noad,junior,One child/teen + one adult per team
-6,2,mens_singles_exportacion,Masculino Exportación,single_set_noad,exportacion,
-7,2,mens_singles_nacional,Masculino Nacional,single_set_noad,nacional,
-8,2,womens_singles,Femenino,single_set_noad,femenino,
+category_id,name,label,default_format,slug
+ct1,mens_singles_exportacion,Masculino Exportación,single_set_noad,exportacion
+ct2,mens_singles_nacional,Masculino Nacional,single_set_noad,nacional
+ct3,womens_singles,Femenino,single_set_noad,femenino
+ct4,mixed_doubles,Adultos Mixto,super_tiebreak_noad,mixto
+ct5,jr_doubles,Adulto Junior,super_tiebreak_noad,junior
