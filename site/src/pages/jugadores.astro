@@ -74,7 +74,6 @@ for (const p of Object.values(players) as any[]) {
           <div class="card-info">
             <span class="card-surname">{p.surname}</span>
             <span class="card-name">{p.name}</span>
-            {p.nickname && <span class="card-nick">{p.nickname}</span>}
           </div>
           <div class="card-stats">
             {titles > 0 && (
@@ -227,14 +226,6 @@ for (const p of Object.values(players) as any[]) {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  .card-nick {
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #aaa;
-    font-style: italic;
-    line-height: 1;
   }
 
   .card-stats {

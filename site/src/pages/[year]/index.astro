@@ -19,9 +19,106 @@ const rows = editionCats.map(cat => {
     score: final?.score ?? null,
   };
 });
+
+// ── Weekend weather ──────────────────────────────────────────────────────────
+const LAT = -34.210109;
+const LON = -70.835653;
+
+function wmoCondition(code) {
+  const c = Number(code);
+  if (c === 0)  return 'Despejado';
+  if (c === 1)  return 'Mayormente despejado';
+  if (c === 2)  return 'Parcialmente nublado';
+  if (c === 3)  return 'Nublado';
+  if (c <= 48)  return 'Niebla';
+  if (c <= 55)  return 'Llovizna';
+  if (c <= 65)  return 'Lluvia';
+  if (c <= 77)  return 'Nieve';
+  if (c <= 82)  return 'Chubascos';
+  return 'Tormenta';
+}
+
+function windDir(deg) {
+  const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSO','SO','OSO','O','ONO','NO','NNO'];
+  return dirs[Math.round(Number(deg) / 22.5) % 16];
+}
+
+function fmtRad(mjm2) {
+  return (mjm2 / 3.6).toFixed(1); // MJ/m2 to kWh/m2
+}
+
+function toDMS(lat, lon) {
+  const fmt = (val, pos, neg) => {
+    const abs = Math.abs(val);
+    const deg = Math.floor(abs);
+    const minFull = (abs - deg) * 60;
+    const min = Math.floor(minFull);
+    const sec = ((minFull - min) * 60).toFixed(1).padStart(4, '0');
+    return `${deg}°${String(min).padStart(2,'0')}'${sec}"${val >= 0 ? pos : neg}`;
+  };
+  return `${fmt(lat,'N','S')} ${fmt(lon,'E','W')}`;
+}
+
+function fmtTime(iso) {
+  return iso ? iso.slice(11, 16) : '—';
+}
+
+function toISO(date) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+
+function formatDate(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m-1, d).toLocaleDateString('es-CL', { day: 'numeric', month: 'long' });
+}
+
+let weekend = null;
+if (edition.date_start) {
+  const [y, m, d] = edition.date_start.split('-').map(Number);
+  const sat = new Date(y, m-1, d);
+  const sun = new Date(y, m-1, d+1);
+  const satStr = toISO(sat);
+  const sunStr = toISO(sun);
+
+  try {
+    const fields = [
+      'temperature_2m_max', 'temperature_2m_min',
+      'precipitation_sum',
+      'windspeed_10m_max', 'winddirection_10m_dominant',
+      'weathercode',
+      'sunrise', 'sunset',
+      'shortwave_radiation_sum',
+    ].join(',');
+    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${LAT}&longitude=${LON}&start_date=${satStr}&end_date=${sunStr}&daily=${fields}&timezone=America%2FSantiago`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.daily) {
+      const dd = data.daily;
+      weekend = [0, 1].map(i => ({
+        date:      dd.time[i],
+        condition: wmoCondition(dd.weathercode[i]),
+        wmoCode:   Number(dd.weathercode[i]),
+        maxTemp:   Math.round(dd.temperature_2m_max[i]),
+        minTemp:   Math.round(dd.temperature_2m_min[i]),
+        precip:    dd.precipitation_sum[i].toFixed(1),
+        wind:      Math.round(dd.windspeed_10m_max[i]),
+        windDir:   windDir(dd.winddirection_10m_dominant[i]),
+        radiation: fmtRad(dd.shortwave_radiation_sum[i]),
+        sunrise:   fmtTime(dd.sunrise[i]),
+        sunset:    fmtTime(dd.sunset[i]),
+      }));
+    }
+  } catch (e) {
+    // weather unavailable — block won't render
+  }
+}
+
+const DAY_NAMES = ['Sábado', 'Domingo'];
+const DAY_CLASSES = ['day-sat', 'day-sun'];
 ---
 
 <Base title={`${edition.year} — ${edition.edition_number}° edición`}>
+<div class="page">
   <div class="breadcrumb">
     <a href={`${base}/`}>Copa Olivar</a>
     <span>/</span>
@@ -68,9 +165,64 @@ const rows = editionCats.map(cat => {
       </table>
     </div>
   </section>
+
+  {false && weekend && (
+    <div class="wx-section">
+      <p class="wx-label">Clima &middot; {toDMS(LAT, LON)}</p>
+      <div class="weekend-grid">
+        {weekend.map((day, i) => (
+          <div class={`day-card ${DAY_CLASSES[i]}`}>
+            <div class="day-header">
+              <span class="day-name">{DAY_NAMES[i]}</span>
+              <span class="day-date">{formatDate(day.date)}</span>
+            </div>
+            <div class="day-body">
+              <div class="condition-row">
+                <span class="condition">{day.condition}</span>
+                <span class="wmo-code">WMO {day.wmoCode}</span>
+              </div>
+              <div class="stats">
+                <dl class="stats-col">
+                  <div class="stat">
+                    <dt>Temperatura</dt>
+                    <dd><span class="val-hi">{day.maxTemp}°C</span><span class="val-sep"> / </span><span class="val-lo">{day.minTemp}°C</span></dd>
+                  </div>
+                  <div class="stat">
+                    <dt>Precipitación</dt>
+                    <dd><span class="val">{day.precip} mm</span></dd>
+                  </div>
+                  <div class="stat">
+                    <dt>Amanecer</dt>
+                    <dd><span class="val">{day.sunrise}</span></dd>
+                  </div>
+                </dl>
+                <dl class="stats-col">
+                  <div class="stat">
+                    <dt>Viento</dt>
+                    <dd><span class="val">{day.wind} km/h</span> <span class="badge">{day.windDir}</span></dd>
+                  </div>
+                  <div class="stat">
+                    <dt>Radiación solar</dt>
+                    <dd><span class="val">{day.radiation} kWh/m²</span></dd>
+                  </div>
+                  <div class="stat">
+                    <dt>Atardecer</dt>
+                    <dd><span class="val">{day.sunset}</span></dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+</div>
 </Base>
 
 <style>
+  .page { padding-bottom: 2.5rem; }
+
   .breadcrumb {
     font-size: 0.8rem;
     font-weight: 600;
@@ -178,8 +330,139 @@ const rows = editionCats.map(cat => {
   }
   .runner-up { color: var(--c-text); font-weight: 300; }
 
+  /* ── Weather block ───────────────────────────────────────────────────────── */
+  .wx-section { margin-top: 1.5rem; }
+
+  .wx-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--c-text);
+    margin-bottom: 0.75rem;
+  }
+
+  .weekend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .day-card {
+    border: var(--border);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Coloured header bar */
+  .day-header {
+    border-bottom: var(--border);
+    padding: 0.55rem 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .day-sat .day-header { background: var(--c-green); }
+  .day-sun .day-header { background: var(--c-blue); }
+
+  .day-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--c-black);
+  }
+
+  .day-date {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--c-text);
+  }
+
+  .day-body {
+    background: #fff;
+    padding: 1.1rem 1.1rem 1rem;
+    flex: 1;
+  }
+
+  /* Condition + WMO code row */
+  .condition-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 0.85rem;
+    margin-bottom: 0.85rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .condition {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--c-black);
+  }
+
+  .wmo-code {
+    font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+    font-size: 0.65rem;
+    color: var(--c-text);
+    opacity: 0.6;
+  }
+
+  /* Stats grid */
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 1.5rem;
+  }
+
+  .stats-col {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    row-gap: 0.45rem;
+    column-gap: 0.75rem;
+    align-content: start;
+  }
+
+  .stat { display: contents; }
+
+  .stats dt {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--c-text);
+    align-self: center;
+    white-space: nowrap;
+  }
+
+  .stats dd {
+    margin: 0;
+    font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+    font-size: 0.8rem;
+    color: var(--c-black);
+    align-self: center;
+  }
+
+  .val       { font-weight: 600; }
+  .val-hi    { font-weight: 700; color: var(--c-black); }
+  .val-sep   { color: var(--c-text); font-weight: 300; }
+  .val-lo    { font-weight: 400; color: var(--c-text); }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    background: var(--c-bg);
+    border: 1px solid #ccc;
+    padding: 0.1rem 0.35rem;
+    vertical-align: middle;
+    line-height: 1.6;
+  }
 
   @media (max-width: 600px) {
     .hide-mobile { display: none; }
+    .weekend-grid { grid-template-columns: 1fr; }
   }
 </style>
