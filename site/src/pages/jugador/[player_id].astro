@@ -32,9 +32,9 @@ const playerMatches = matches.filter((m: any) =>
 );
 
 const wins = playerMatches.filter((m: any) => m.winner1_id === player.player_id);
-const losses = playerMatches.filter((m: any) => m.loser1_id === player.player_id);
-const winPct = playerMatches.length > 0 ? Math.round(wins.length / playerMatches.length * 100) : null;
 const titles = wins.filter((m: any) => m.round === 'F');
+const editionsPlayed = new Set(playerMatches.map((m: any) => tournamentById[m.tournament_id]?.edition_id).filter(Boolean)).size;
+const categoriesPlayed = new Set(playerMatches.map((m: any) => tournamentById[m.tournament_id]?.slug).filter(Boolean)).size;
 
 const ROUND_RANK: Record<string, number> = { R16: 1, QF: 2, SF: 3, '3P': 3, F: 4 };
 const sortedMatches = [...playerMatches].sort((a: any, b: any) => {
@@ -125,16 +125,16 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
 
   <div class="stats-row">
     <div class="stat-card">
-      <span class="stat-value">{wins.length}</span>
-      <span class="stat-label">Victorias</span>
+      <span class="stat-value">{playerMatches.length}</span>
+      <span class="stat-label">Partidos</span>
     </div>
     <div class="stat-card">
-      <span class="stat-value">{losses.length}</span>
-      <span class="stat-label">Derrotas</span>
+      <span class="stat-value">{editionsPlayed}</span>
+      <span class="stat-label">{editionsPlayed === 1 ? 'Edición' : 'Ediciones'}</span>
     </div>
     <div class="stat-card">
-      <span class="stat-value">{winPct !== null ? `${winPct}%` : '—'}</span>
-      <span class="stat-label">% victorias</span>
+      <span class="stat-value">{categoriesPlayed}</span>
+      <span class="stat-label">{categoriesPlayed === 1 ? 'Categoría' : 'Categorías'}</span>
     </div>
     <div class="stat-card">
       <span class="stat-value">{titles.length}</span>
