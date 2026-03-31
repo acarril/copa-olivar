@@ -1,8 +1,18 @@
 ---
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import Base from '../layouts/Base.astro';
 import { players, matches, displayName, slugify } from '../lib/data.js';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const PHOTO_EXTS = ['jpg', 'jpeg', 'png', 'webp'];
+function findPhoto(player_id: string): string | null {
+  const ext = PHOTO_EXTS.find(e =>
+    existsSync(resolve(process.cwd(), `public/images/players/${player_id}.${e}`))
+  );
+  return ext ? `${base}/images/players/${player_id}.${ext}` : null;
+}
 
 const AVATAR_COLORS = ['var(--c-blue)', 'var(--c-green)', 'var(--c-pink)', 'var(--c-yellow)'];
 
@@ -28,6 +38,7 @@ for (const p of Object.values(players) as any[]) {
       <h1>Jugadores</h1>
       <p>{sortedPlayers.length} participantes · Copa Olivar</p>
     </div>
+    <img class="hero-logo" src={`${base}/images/logos/logo_abierto_olivar.png`} alt="Copa Olivar" />
   </section>
 
   <div class="search-wrap">
@@ -45,6 +56,7 @@ for (const p of Object.values(players) as any[]) {
       const idx = parseInt(p.player_id.slice(1)) - 1;
       const color = AVATAR_COLORS[idx % 4];
       const initials = `${p.name} ${p.surname}`.split(' ').filter(Boolean).slice(0, 2).map((w: string) => w[0]).join('');
+      const photoSrc = findPhoto(p.player_id);
       const slug = slugify(p.name, p.surname);
       const wins = winsByPlayer[p.player_id] ?? 0;
       const titles = titlesByPlayer[p.player_id] ?? 0;
@@ -55,7 +67,10 @@ for (const p of Object.values(players) as any[]) {
           class="player-card"
           data-search={searchKey}
         >
-          <div class="card-avatar" style={`background: ${color}`}>{initials}</div>
+          {photoSrc
+            ? <img class="card-avatar photo" src={photoSrc} alt={`${p.name} ${p.surname}`} />
+            : <div class="card-avatar" style={`background: ${color}`}>{initials}</div>
+          }
           <div class="card-info">
             <span class="card-surname">{p.surname}</span>
             <span class="card-name">{p.name}</span>
@@ -95,6 +110,21 @@ for (const p of Object.values(players) as any[]) {
     color: var(--c-text);
     margin-top: 0.35rem;
     font-weight: 300;
+  }
+
+  .hero-logo {
+    height: calc(2.6rem * 1.1 + 1rem + 0.35rem);
+    width: auto;
+    flex-shrink: 0;
+    border: var(--border);
+    border-radius: 50%;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.1s, transform 0.1s;
+    cursor: default;
+  }
+  .hero-logo:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translate(-2px, -2px);
   }
 
   .search-wrap {
@@ -170,6 +200,10 @@ for (const p of Object.values(players) as any[]) {
     color: var(--c-black);
   }
 
+  .card-avatar.photo {
+    object-fit: cover;
+  }
+
   .card-info {
     flex: 1;
     min-width: 0;
@@ -243,13 +277,28 @@ for (const p of Object.values(players) as any[]) {
 
   input.addEventListener('input', function () {
     var q = this.value.toLowerCase().trim();
-    var cards = grid.querySelectorAll('.player-card');
-    var visible = 0;
+    var cards = Array.from(grid.querySelectorAll('.player-card'));
+
+    if (!q) {
+      cards.forEach(function (card) { card.style.display = ''; grid.appendChild(card); });
+      noResults.hidden = true;
+      return;
+    }
+
+    var starts = [], contains = [], hidden = [];
     cards.forEach(function (card) {
-      var match = !q || card.dataset.search.includes(q);
-      card.style.display = match ? '' : 'none';
-      if (match) visible++;
+      var search = card.dataset.search;
+      if (!search.includes(q)) {
+        hidden.push(card);
+      } else if (search.split(' ').some(function (w) { return w.startsWith(q); })) {
+        starts.push(card);
+      } else {
+        contains.push(card);
+      }
     });
-    noResults.hidden = visible > 0;
+
+    starts.concat(contains).forEach(function (card) { card.style.display = ''; grid.appendChild(card); });
+    hidden.forEach(function (card) { card.style.display = 'none'; });
+    noResults.hidden = starts.length + contains.length > 0;
   });
 </script>

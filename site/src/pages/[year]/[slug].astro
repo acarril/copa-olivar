@@ -23,18 +23,21 @@ const championUrl = champion ? `${base}/jugador/${slugify(champion.name, champio
 
 <Base title={`${cat.label} ${edition?.year}`}>
   <div class="header">
-    <div class="breadcrumb">
-      <a href={`${base}/`}>Copa Olivar</a>
-      <span>/</span>
-      <a href={`${base}/${edition?.year}/`}>{edition?.year}</a>
-      <span>/</span>
+    <div class="header-left">
+      <div class="breadcrumb">
+        <a href={`${base}/`}>Copa Olivar</a>
+        <span>/</span>
+        <a href={`${base}/${edition?.year}/`}>{edition?.year}</a>
+        <span>/</span>
+      </div>
+      <h1>{cat.label}</h1>
+      {championName && championUrl && (
+        <a href={championUrl} class="champion-badge">
+          <span class="trophy">&#10032;</span> {championName}
+        </a>
+      )}
     </div>
-    <h1>{cat.label}</h1>
-    {championName && championUrl && (
-      <a href={championUrl} class="champion-badge">
-        <span class="trophy">&#10032;</span> {championName}
-      </a>
-    )}
+    <img class="hero-logo" src={`${base}/images/logos/logo_abierto_olivar.png`} alt="Copa Olivar" />
   </div>
 
   <div class="bracket-card">
@@ -44,7 +47,25 @@ const championUrl = champion ? `${base}/jugador/${slugify(champion.name, champio
 
 <style>
   .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 1.5rem;
+  }
+
+  .hero-logo {
+    height: calc(2.6rem * 1.1 + 1rem + 0.35rem);
+    width: auto;
+    flex-shrink: 0;
+    border: var(--border);
+    border-radius: 50%;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.1s, transform 0.1s;
+    cursor: default;
+  }
+  .hero-logo:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translate(-2px, -2px);
   }
 
   .breadcrumb {
@@ -82,7 +103,7 @@ const championUrl = champion ? `${base}/jugador/${slugify(champion.name, champio
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    background: var(--c-yellow);
+    background: var(--c-blue);
     border: var(--border);
     box-shadow: var(--shadow-sm);
     color: var(--c-black);

@@ -28,8 +28,11 @@ const rows = editionCats.map(cat => {
   </div>
 
   <section class="hero">
-    <h1>{edition.year}</h1>
-    <p>{edition.edition_number}° edición</p>
+    <div class="hero-text">
+      <h1>{edition.year}</h1>
+      <p>{edition.edition_number}° edición</p>
+    </div>
+    <img class="hero-logo" src={`${base}/images/logos/logo_abierto_olivar.png`} alt="Copa Olivar" />
   </section>
 
   <section class="card">
@@ -47,7 +50,7 @@ const rows = editionCats.map(cat => {
         <tbody>
           {rows.map(({ cat, champion, runnerUp, score }) => (
             <tr>
-              <td class="cat-label"><a class="cat-link" href={`${base}/${edition.year}/${cat.slug}`}>{cat.label}</a></td>
+              <td class="cat-label"><a class="cat-badge" href={`${base}/${edition.year}/${cat.slug}`}>{cat.label}</a></td>
               <td class="champion">
                 {champion
                   ? <a class="text-link" href={`${base}/jugador/${slugify(champion.name, champion.surname)}`}>{displayName(champion)}</a>
@@ -92,6 +95,9 @@ const rows = editionCats.map(cat => {
   }
 
   .hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 2rem;
   }
   .hero h1 {
@@ -105,6 +111,20 @@ const rows = editionCats.map(cat => {
     color: var(--c-text);
     margin-top: 0.35rem;
     font-weight: 300;
+  }
+  .hero-logo {
+    height: calc(2.6rem * 1.1 + 1rem + 0.35rem);
+    width: auto;
+    flex-shrink: 0;
+    border: var(--border);
+    border-radius: 50%;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.1s, transform 0.1s;
+    cursor: default;
+  }
+  .hero-logo:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translate(-2px, -2px);
   }
 
   .card {
@@ -158,23 +178,6 @@ const rows = editionCats.map(cat => {
   }
   .runner-up { color: var(--c-text); font-weight: 300; }
 
-  .cat-link {
-    display: inline-block;
-    font-size: 0.78rem;
-    font-weight: 600;
-    white-space: nowrap;
-    padding: 0.2rem 0.6rem;
-    background: var(--c-blue);
-    border: var(--border);
-    box-shadow: var(--shadow-sm);
-    color: var(--c-black);
-    text-decoration: none;
-    transition: box-shadow 0.1s, transform 0.1s;
-  }
-  .cat-link:hover {
-    box-shadow: var(--shadow-card);
-    transform: translate(-2px, -2px);
-  }
 
   @media (max-width: 600px) {
     .hide-mobile { display: none; }

@@ -82,7 +82,7 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
 
   <div class="profile-card">
     {photoSrc
-      ? <img class="avatar photo" src={photoSrc} alt={`${player.name} ${player.surname}`} />
+      ? <img class="avatar photo clickable" src={photoSrc} alt={`${player.name} ${player.surname}`} onclick="document.getElementById('photo-modal').showModal()" />
       : <div class="avatar" style={`background: ${avatarColor}`}>{initials}</div>
     }
     <div class="profile-info">
@@ -195,6 +195,18 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
       <p>Sin partidos registrados.</p>
     </div>
   )}
+
+  {photoSrc && (
+    <dialog id="photo-modal">
+      <div class="photo-modal-header">
+        <span>{player.name} {player.surname}</span>
+        <button onclick="document.getElementById('photo-modal').close()" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="photo-modal-body">
+        <img src={photoSrc} alt={`${player.name} ${player.surname}`} />
+      </div>
+    </dialog>
+  )}
 </Base>
 
 <style>
@@ -249,6 +261,60 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
 
   .avatar.photo {
     object-fit: cover;
+  }
+
+  .avatar.clickable {
+    cursor: zoom-in;
+    transition: box-shadow 0.1s, transform 0.1s;
+  }
+  .avatar.clickable:hover {
+    box-shadow: var(--shadow-card);
+    transform: translate(-2px, -2px);
+  }
+
+  #photo-modal {
+    border: var(--border);
+    box-shadow: var(--shadow-hover);
+    padding: 0;
+    max-width: min(600px, calc(100vw - 2rem));
+    width: 100%;
+    background: #fff;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+  }
+  #photo-modal::backdrop { background: rgba(0,0,0,0.75); }
+
+  .photo-modal-header {
+    background: var(--c-yellow);
+    border-bottom: var(--border);
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--c-black);
+  }
+  .photo-modal-header button {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--c-black);
+    padding: 0;
+    line-height: 1;
+    font-family: inherit;
+  }
+
+  .photo-modal-body img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 80vh;
+    object-fit: contain;
   }
 
   .profile-info { display: flex; flex-direction: column; gap: 0.3rem; }
@@ -470,3 +536,12 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
     .stat-card { flex: 1 1 calc(50% - 0.375rem); }
   }
 </style>
+
+<script is:inline>
+  var photoModal = document.getElementById('photo-modal');
+  if (photoModal) {
+    photoModal.addEventListener('click', function(e) {
+      if (e.target === this) this.close();
+    });
+  }
+</script>
