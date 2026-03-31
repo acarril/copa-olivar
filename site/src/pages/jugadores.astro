@@ -158,14 +158,10 @@ for (const p of Object.values(players) as any[]) {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.75rem;
+    padding: 0 3px 3px 0;
   }
 
   @media (max-width: 640px) {
-    .players-grid { grid-template-columns: repeat(2, 1fr); }
-    .page-header h1 { font-size: 2.2rem; }
-  }
-
-  @media (max-width: 380px) {
     .players-grid { grid-template-columns: 1fr; }
   }
 
@@ -179,6 +175,7 @@ for (const p of Object.values(players) as any[]) {
     box-shadow: var(--shadow-sm);
     text-decoration: none;
     transition: box-shadow 0.1s, transform 0.1s;
+    min-width: 0;
   }
 
   .player-card:hover {
@@ -246,6 +243,7 @@ for (const p of Object.values(players) as any[]) {
     align-items: flex-end;
     gap: 0.25rem;
     flex-shrink: 0;
+    width: 2.5rem;
   }
 
   .stat-pill {
