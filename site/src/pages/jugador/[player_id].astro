@@ -87,7 +87,6 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
     }
     <div class="profile-info">
       <h1>{player.name} {player.surname}</h1>
-      {player.nickname && <span class="nickname">{player.nickname}</span>}
       {titles.length > 0 && (
         <div class="titles">
           {titles.map((m: any) => {
@@ -158,6 +157,14 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
             const cat = catById[m.category_id];
             const year = Number(editionById[cat?.edition_id]?.year);
             const isCurrent = year === currentYear;
+            const isUnconfirmed = m.notes?.includes('unconfirmed');
+            const isMissingScore = opponent && !m.score;
+            const suggestData = opponent ? JSON.stringify({
+              winner: isWin ? displayName(player) : displayName(opponent),
+              loser: isWin ? displayName(opponent) : displayName(player),
+              round: m.round,
+              context: cat ? `${cat.label} ${year}` : '',
+            }) : null;
             return (
               <tr class={isCurrent ? 'row-current' : 'row-historical'}>
                 <td>
@@ -180,8 +187,15 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
                   }
                 </td>
                 <td class="score-cell">
-                  {m.score ? (isWin ? m.score : reverseScore(m.score)) : '—'}
-                  {m.notes?.includes('unconfirmed') && <span class="unconfirmed">?</span>}
+                  <div class="score-inner">
+                    <span>{m.score ? (isWin ? m.score : reverseScore(m.score)) : '—'}</span>
+                    {isUnconfirmed && suggestData && (
+                      <button class="suggest-btn" onclick={`openSuggestModal(${suggestData})`} title="Resultado no confirmado — haz clic para sugerir">?</button>
+                    )}
+                    {isMissingScore && !isUnconfirmed && suggestData && (
+                      <button class="suggest-btn suggest-btn-missing" onclick={`openSuggestModal(${suggestData})`} title="¿Recuerdas este resultado?">?</button>
+                    )}
+                  </div>
                 </td>
               </tr>
             );
@@ -324,16 +338,6 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
     font-size: 1.8rem;
     color: var(--c-black);
     line-height: 1.1;
-  }
-
-  .nickname {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: var(--c-text);
-    background: var(--c-bg);
-    border: var(--border);
-    padding: 0.15rem 0.5rem;
-    align-self: flex-start;
   }
 
   .titles { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.2rem; }
@@ -511,18 +515,34 @@ const photoSrc = foundExt ? `${base}/images/players/${player.player_id}.${foundE
     font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
     font-size: 0.82rem;
     color: var(--c-text);
+    width: 1%;
+    white-space: nowrap;
   }
 
-  .unconfirmed {
+  .score-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .suggest-btn {
     display: inline-block;
-    font-size: 0.6rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    background: var(--c-pink);
+    background: var(--c-yellow);
+    color: var(--c-black);
     border: 1px solid var(--c-black);
     padding: 1px 4px;
-    margin-left: 4px;
+    margin-left: auto;
     vertical-align: middle;
-    font-family: var(--font-body);
+    font-family: inherit;
+    cursor: pointer;
+    transition: box-shadow 0.1s, transform 0.1s;
+  }
+  .suggest-btn:hover {
+    box-shadow: 2px 2px 0 var(--c-black);
+    transform: translate(-1px, -1px);
   }
 
   .empty p {
