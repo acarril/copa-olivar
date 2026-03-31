@@ -1,106 +1,106 @@
-# Olivar Open — Data Repository
+# Olivar Open — Repositorio de datos
 
-Historical match data for the Olivar Open, an annual family tennis tournament. First held in 2014; editions 10 (2026) is the latest. Editions 2020 and 2021 were skipped due to the pandemic.
+Datos históricos de partidos del Abierto Olivar, un torneo de tenis familiar que se celebra anualmente. La primera edición fue en 2014; la edición 10 (2026) es la más reciente. Las ediciones 2020 y 2021 no se realizaron por la pandemia.
 
-## Tournament structure
+## Estructura del torneo
 
-Each edition has several categories (e.g. men's singles, women's singles, mixed doubles). Categories and their formats vary across editions. All draws are single-elimination (knockout). There are no round-robin stages.
+Cada edición tiene varias categorías (ej. masculino singles, femenino singles, dobles mixto). Las categorías y sus formatos varían entre ediciones. Todos los cuadros son eliminación directa (knockout). No hay fases de grupos.
 
-The player pool is a large extended family of seven branches: Correa, Ruiz Tagle (Eugenia's), Ruiz Tagle (Carola's), Ovalle, Lihn, Andueza-Melero, and Ross.
+El grupo de jugadores es una familia extensa de siete ramas: Correa, Ruiz Tagle (de Eugenia), Ruiz Tagle (de Carola), Ovalle, Lihn, Andueza-Melero y Ross.
 
-## Data files
+## Archivos de datos
 
 ```
 data/
-├── players.csv         # All players across all editions
-├── families.csv        # The seven family branches
-├── editions.csv        # One row per annual tournament
-├── categories.csv      # Timeless category definitions (Femenino, Exportación, etc.)
-├── tournaments.csv     # One row per category × edition (the actual draw)
-├── entries.csv         # Which players entered which category (includes seedings)
-├── matches.csv         # All match results
-└── relationships.csv   # Known family relationships between players
+├── players.csv         # Todos los jugadores en todas las ediciones
+├── families.csv        # Las siete ramas familiares
+├── editions.csv        # Una fila por edición anual
+├── categories.csv      # Definiciones de categorías (Femenino, Exportación, etc.)
+├── tournaments.csv     # Una fila por categoría × edición (el cuadro real)
+├── entries.csv         # Qué jugadores participaron en qué categoría (incluye cabezas de serie)
+├── matches.csv         # Todos los resultados de partidos
+└── relationships.csv   # Relaciones familiares conocidas entre jugadores
 ```
 
 ### categories.csv
-A category type is the timeless flavor of a draw (e.g. "Femenino", "Masculino Nacional"). It exists independently of any edition — you can reference it when talking about rules, history, or eligibility across years.
+Una categoría es la definición atemporal de un tipo de cuadro (ej. "Femenino", "Masculino Nacional"). Existe independientemente de cualquier edición — se usa al hablar de reglas, historial o requisitos de participación a través de los años.
 
-| Column | Description |
+| Columna | Descripción |
 |---|---|
-| `category_id` | Unique ID (e.g. `ct1`) |
-| `name` | Machine-readable name (e.g. `womens_singles`) |
-| `label` | Human-readable name in Spanish |
-| `default_format` | Default score format — see below |
-| `slug` | Short Spanish URL-friendly name (e.g. `femenino`) |
+| `category_id` | ID único (ej. `ct1`) |
+| `name` | Nombre en formato máquina (ej. `womens_singles`) |
+| `label` | Nombre legible en español |
+| `default_format` | Formato de puntuación por defecto — ver más abajo |
+| `slug` | Nombre corto amigable para URLs (ej. `femenino`) |
 
 ### tournaments.csv
-A tournament is a specific draw: one category type in one edition (e.g. "the 2026 Femenino"). Foreign key `category_id` is used in `entries.csv` and `matches.csv`.
+Un torneo es un cuadro específico: una categoría en una edición determinada (ej. "el Femenino 2026"). La clave foránea `category_id` se usa en `entries.csv` y `matches.csv`.
 
-| Column | Description |
+| Columna | Descripción |
 |---|---|
-| `tournament_id` | Unique ID (e.g. `1`) |
-| `edition_id` | Which edition |
-| `category_id` | Which category |
-| `format` | Score format override; if blank, inherits `default_format` from category type |
-| `notes` | Anything worth flagging |
+| `tournament_id` | ID único (ej. `1`) |
+| `edition_id` | A qué edición pertenece |
+| `category_id` | A qué categoría pertenece |
+| `format` | Formato de puntuación específico; si está vacío, hereda `default_format` de la categoría |
+| `notes` | Cualquier observación relevante |
 
 ### players.csv
-| Column | Description |
+| Columna | Descripción |
 |---|---|
-| `player_id` | Unique ID (e.g. `p1`) |
-| `name` | Full name |
-| `nickname` | Common name or apodo (e.g. `Ness`, `Chuma`) |
-| `gender` | `M` or `F` |
-| `birth_year` | Optional |
-| `photo_url` | Optional link to a photo |
-| `family_id` | Reference to `families.csv` |
+| `player_id` | ID único (ej. `p1`) |
+| `name` | Nombre completo |
+| `nickname` | Nombre común o apodo (ej. `Ness`, `Chuma`) |
+| `gender` | `M` o `F` |
+| `birth_year` | Opcional |
+| `photo_url` | Enlace opcional a una foto |
+| `family_id` | Referencia a `families.csv` |
 
 ### editions.csv
-One row per year the tournament was held.
+Una fila por cada año en que se realizó el torneo.
 
 ### entries.csv
-One row per player per category per edition. Captures participation and seedings.
+Una fila por jugador por categoría por edición. Registra la participación y las cabezas de serie.
 
 ### matches.csv
-| Column | Description |
+| Columna | Descripción |
 |---|---|
-| `match_id` | Unique ID (e.g. `m1`) |
-| `edition_id` / `tournament_id` | Foreign keys |
+| `match_id` | ID único (ej. `m1`) |
+| `edition_id` / `tournament_id` | Claves foráneas |
 | `round` | `R16`, `QF`, `SF`, `3P`, `F` |
-| `winner1_id` | Winner (singles) or first player of winning pair (doubles) |
-| `winner2_id` | Second player of winning pair; blank for singles |
-| `loser1_id` / `loser2_id` | Same pattern for the losing side |
-| `score` | See score notation below |
-| `referee_id` | Player ID of the referee, if recorded |
-| `walkover` | `true` if the match was not played |
-| `notes` | Anything worth flagging |
+| `winner1_id` | Ganador (singles) o primer jugador del par ganador (dobles) |
+| `winner2_id` | Segundo jugador del par ganador; vacío en singles |
+| `loser1_id` / `loser2_id` | Mismo esquema para el lado perdedor |
+| `score` | Ver notación de puntuación más abajo |
+| `referee_id` | ID del jugador que arbitró, si se registró |
+| `walkover` | `true` si el partido no se jugó |
+| `notes` | Cualquier observación relevante |
 
 ### relationships.csv
-Known family links. `parent_child` means player1 is the parent of player2. `siblings` is undirected.
+Vínculos familiares conocidos. `parent_child` significa que player1 es padre/madre de player2. `siblings` es una relación no dirigida.
 
-## Score notation
+## Notación de puntuación
 
-Scores are always written from the **winner's perspective** (winner's tally first).
+Los resultados siempre se escriben desde la **perspectiva del ganador** (el marcador del ganador primero).
 
 ### `single_set_noad`
-One set, no-advantage. Tiebreak at 5-5 (played to 7, no-ad; golden point at 6-6).
+Un set, sin ventaja. Tiebreak al 5-5 (se juega a 7, sin ventaja; punto de oro al 6-6).
 
 - Normal: `6-4`
-- Tiebreak: `6-5(N)` where N is the loser's tiebreak points — e.g. `6-5(4)` means the tiebreak was 7-4.
+- Tiebreak: `6-5(N)` donde N son los puntos del perdedor en el tiebreak — ej. `6-5(4)` significa que el tiebreak quedó 7-4.
 
 ### `super_tiebreak_noad`
-Super tiebreak to 10 points, no-advantage. Golden point at 9-9.
+Super tiebreak a 10 puntos, sin ventaja. Punto de oro al 9-9.
 
-- Written as `[W-L]` — e.g. `[10-7]`.
+- Se escribe como `[W-L]` — ej. `[10-7]`.
 
-### Finals exception
-Finals tiebreaks require a 2-point margin (no golden point). Record the actual final score.
+### Excepción en finales
+Los tiebreaks de finales requieren diferencia de 2 puntos (sin punto de oro). Se registra el marcador real.
 
-## Contributing
+## Cómo agregar datos
 
-To add results for a new edition:
-1. Add a row to `editions.csv`.
-2. Add rows to `tournaments.csv` for that edition's categories and formats.
-3. Add any new players to `players.csv` (full name in `name`, common name in `nickname`).
-4. Add entries to `entries.csv`, including seeds where applicable.
-5. Add matches to `matches.csv`, one row per match, using the score notation above.
+Para agregar resultados de una nueva edición:
+1. Agregar una fila a `editions.csv`.
+2. Agregar filas a `tournaments.csv` para las categorías y formatos de esa edición.
+3. Agregar los jugadores nuevos a `players.csv` (nombre formal en `name`, nombre común en `nickname`).
+4. Agregar las entradas a `entries.csv`, incluyendo cabezas de serie cuando corresponda.
+5. Agregar los partidos a `matches.csv`, una fila por partido, usando la notación de puntuación indicada arriba.
