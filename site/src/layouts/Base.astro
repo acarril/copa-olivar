@@ -8,8 +8,8 @@ const baseClean = base.replace(/\/$/, '');
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{title ? `${title} — Olivar Open` : 'Olivar Open'}</title>
-  <link rel="icon" type="image/svg+xml" href={`${baseClean}/favicon.svg`} />
+  <title>{title ? `${title} — Copa Olivar` : 'Copa Olivar'}</title>
+  <link rel="icon" type="image/svg+xml" href={`${baseClean}/favicon.png`} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
@@ -17,7 +17,8 @@ const baseClean = base.replace(/\/$/, '');
     :root {
       --c-blue:    #C4B0E8;
       --c-green:   #9DD4AE;
-      --c-pink:    #F396E5;
+      --c-pink:    #E8E0F5;
+      --c-cream:   #F5EFD8;
       --c-yellow:  #F2CF96;
       --c-bg:      #F2F2F2;
       --c-text:    #4E6273;
@@ -229,7 +230,7 @@ const baseClean = base.replace(/\/$/, '');
     </div>
     <div class="modal-body">
       <form id="suggest-form" action="https://formspree.io/f/mwvwoyqp" method="POST">
-        <input type="hidden" name="_subject" id="form-subject" value="Sugerencia — Olivar Open">
+        <input type="hidden" name="_subject" id="form-subject" value="Sugerencia — Copa Olivar">
         <input type="hidden" name="partido" id="form-match" value="">
         <input type="hidden" name="categoria" id="form-context" value="">
         <div class="form-group">
@@ -275,7 +276,7 @@ const baseClean = base.replace(/\/$/, '');
         title.textContent = 'Contribuir';
         matchInput.value = '';
         contextInput.value = '';
-        subjectInput.value = 'Sugerencia — Olivar Open';
+        subjectInput.value = 'Sugerencia — Copa Olivar';
       }
 
       document.getElementById('suggest-form').hidden = false;
