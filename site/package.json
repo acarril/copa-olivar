@@ -1,5 +1,5 @@
 {
-  "name": "copaolivar-site",
+  "name": "copa-olivar-site",
   "type": "module",
   "scripts": {
     "dev": "astro dev",
