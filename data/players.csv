@@ -1,11 +1,11 @@
 player_id,name,surname,nickname,gender,birth_year,family_id,nickname_only
-p1,Andres,Galilea,Ness,M,,,true
-p2,Juan Pablo,Gonzalez,JP,M,,,false
+p1,Andrés,Galilea,Ness,M,,,true
+p2,Juan Pablo,González,JP,M,,,false
 p3,Jaime,Herrera,Jimmy,M,,,true
 p4,Sebastian,Valenzuela,,M,,,false
 p5,Jorge,Browne,,M,,,false
 p6,Alvaro,Carril,,M,,,false
-p7,Agustin,Melero,,M,,,false
+p7,Agustín,Melero,,M,,,false
 p8,Santiago,Ovalle,Tatalo,M,,,false
 p9,Rafael,Galilea,Rafa,M,,,false
 p10,Camilo,Valenzuela,,M,,,false
@@ -16,7 +16,7 @@ p14,Jorge,Correa,,M,,,false
 p15,Juan,de Arrizabalaga,,M,,,false
 p16,Santiago,Valenzuela,,M,,,false
 p17,Paulo,Olivares,,M,,,false
-p18,Tomas,Melero,,M,,,false
+p18,Tomás,Melero,,M,,,false
 p19,Maru,Eyzaguirre,,F,,,false
 p20,Slavka,Chelebifski,,F,,,false
 p21,Catalina,Picon,Cata,F,,,false
