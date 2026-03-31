@@ -24,7 +24,7 @@ const editionData = sortedEditions.map(edition => {
 <Base>
   <section class="hero">
     <div class="hero-text">
-      <h1>Abierto Olivar</h1>
+      <h1><span class="ironic">Abierto</span> Olivar</h1>
       <p>Federación Rural de Tenis Olivar</p>
     </div>
     <img class="hero-logo" src={`${base}/images/logos/logo_abierto_olivar.png`} alt="Abierto Olivar" />
@@ -81,6 +81,15 @@ const editionData = sortedEditions.map(edition => {
     font-size: 2.6rem;
     color: var(--c-black);
     line-height: 1.1;
+  }
+  .ironic::before { content: '\201C'; }
+  .ironic::after  { content: '\201D'; }
+  .ironic::before,
+  .ironic::after {
+    font-size: 1.4em;
+    line-height: 0;
+    vertical-align: -0.25em;
+    color: #D8D8D8;
   }
   .hero p {
     font-size: 1rem;
